@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Mon app DJANGO - Accueil{% endblock %}
+
+{% block content %}
+<h2>Bienvenue sur la page d'accueil</h2>
+{% if user.is_authenticated %}
+<p>Bonjour {{ user.username }} !</p>
+{% else %}
+<p>Bienvenue, veuillez vous <a href="{% url 'login' %}">connecter</a>.</p>
+{% endif %}
+<p>Ceci est le contenu de la page d'accueil.</p>
+{% endblock %}

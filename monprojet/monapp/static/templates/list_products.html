@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Mon app DJANGO - Produits{% endblock %}
+
+{% block content %}
+<h1>{{ titremenu }}</h1>
+<a class="btn btn-success mb-4" href="{% url 'new_product' %}">Nouveau produit</a>
+<!-- Barre de recherche -->
+<p class="lead mb-3 ml-0">Rechercher un élément...</p>
+<form method="GET" action="">
+    <input class="form-control" type="text" name="search" placeholder="Tapez ici votre recherche"
+        value="{{ request.GET.search }}">
+    <button type="submit" class="btn btn-success mt-2">Rechercher</button>
+</form>
+
+<p>J'ai {% if prdcts|length < 5 %} peu de {% elif prdcts|length < 10 %} quelques {% else %} beaucoup de {% endif %}
+        produits préférés.</p>
+        <p>Mes produits préférés sont :</p>
+        <ul>
+            {% for prdct in products %}
+            <li><a href="{% url 'detail_product' prdct.id %}">{{ prdct.name }}</a></li>
+
+            {% endfor %}
+        </ul>
+        {% endblock %}

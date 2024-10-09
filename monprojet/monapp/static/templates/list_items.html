@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Mon app DJANGO - Attributs{% endblock %}
+
+{% block content %}
+<h1>Liste des attributs</h1>
+<a href="{% url 'new_item' %}" class="btn btn-success mt-2">Ajouter un attribut</a>
+
+<table class="table">
+    <thead>
+        <th>Code</th>
+        <th>Produit</th>
+        <th>Attributs associés</th>
+        <th>Actions</th>
+    </thead>
+    <tbody>
+        {% for item in productitems %} <tr>
+            <td>{{ item.code }}</a></td>
+            <td>{{ item.product.name }}</a></td>
+            <td>{% for attribute in item.attributes.all %}
+                <p>{{ attribute.product_attribute.name }} : {{attribute.value }}</p> {% empty %}
+                <p>Aucune valeur</p>
+                {% endfor %}
+            </td>
+            <td>
+                <a href="{% url 'detail_item' item.id %}" class="btn btn-primary mt-2">Détails</a>
+                <a href="{% url 'update_item' item.id %}" class="btn btn-warning mt-2">Modifier</a>
+                <a href="{% url 'delete_item' item.id %}" class="btn btn-danger mt-2">Supprimer</a>
+        </tr> {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

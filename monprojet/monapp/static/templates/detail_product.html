@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Mon app DJANGO - Détail du produit{% endblock %}
+
+{% block menu %} <h1>{{titremenu}}</h1> {% endblock %}
+{% block content %}
+<h2>{{ product.name }}</h2>
+<ul>
+    <li>Code : {{ product.code }}</li>
+    <li>Prix HT : {{ product.price_ht }}</li>
+    <li>Prix TTC: {{ product.price_ttc }}</li>
+    <li>Date de création : {{ product.date_creation }}</li>
+</ul>
+<a href="{% url 'update_product' product.id %}" class="btn btn-primary mt-3">Modifier</a>
+<a href="{% url 'delete_product' product.id %}" class="btn btn-danger mt-3">Supprimer</a>
+{% endblock %}

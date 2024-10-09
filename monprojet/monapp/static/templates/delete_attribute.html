@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1> Suppression d'un attribut </h1>
+<form action="" method="post">
+    {% csrf_token %}
+    <p>Etes-vous sûr de vouloir supprimer l'attribut : {{ object.name }} ?</p> <button type="submit"
+        class="btn btn-success mt-2">Confirmer</button>
+</form>
+{% endblock %}
