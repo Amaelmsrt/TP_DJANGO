@@ -16,10 +16,23 @@
 <p>J'ai {% if prdcts|length < 5 %} peu de {% elif prdcts|length < 10 %} quelques {% else %} beaucoup de {% endif %}
         produits préférés.</p>
         <p>Mes produits préférés sont :</p>
-        <ul>
-            {% for prdct in products %}
-            <li><a href="{% url 'detail_product' prdct.id %}">{{ prdct.name }}</a></li>
-
-            {% endfor %}
-        </ul>
-        {% endblock %}
+        <div class="container">
+            <div class="row">
+                {% for prdct in products %}
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow-sm">
+                        <img src="{{ prdct.image.url }}" alt="{{ prdct.name }}" class="card-img-top img-thumbnail">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ prdct.name }}</h5>
+                            <p class="card-text">Prix HT: {{ prdct.price_ht }} €</p>
+                            <p class="card-text">Prix TTC: {{ prdct.price_ttc }} €</p>
+                            <a href="{% url 'detail_product' prdct.id %}" class="btn btn-primary">Voir le détail</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                {% endfor %}
+            </div>
+        </div>
+{% endblock %}

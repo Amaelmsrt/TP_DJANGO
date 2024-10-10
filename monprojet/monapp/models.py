@@ -24,7 +24,8 @@ class Product(models.Model):
     price_ttc     = models.DecimalField(max_digits=8, decimal_places=2,  null=True, blank=True, verbose_name="Prix unitaire TTC")
     status        = models.SmallIntegerField(choices=PRODUCT_STATUS, default=0)
     date_creation = models.DateTimeField(blank=True, verbose_name="Date création", default=timezone.now)
-    suppliers  = models.ManyToManyField("Supplier", related_name="products", through='ProductSupplier')
+    suppliers     = models.ManyToManyField("Supplier", related_name="products", through='ProductSupplier')
+    image         = models.ImageField(upload_to='img/', null=True, blank=True, verbose_name="Image du produit")
 
     def __str__(self):
         return "{0} {1}".format(self.name, self.code)
