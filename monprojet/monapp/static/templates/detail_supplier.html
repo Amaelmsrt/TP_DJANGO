@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Mon app DJANGO - Détail du produit{% endblock %}
+
+{% block menu %} <h1>{{ titremenu }}</h1> {% endblock %}
+{% block content %}
+<h2>{{ supplier.name }}</h2>
+<ul>
+    <li>Adresse : {{  supplier.address }}</li>
+    <li>Téléphone : {{ supplier.phone }}</li>
+    <li>Email : {{ supplier.email }}</li>
+</ul>
+Vend les produits suivants :
+<ul>
+    {% for product in supplier.products.all %}
+        <li><a href="{% url 'detail_product' product.id %}">{{ product.name }}</a></li>
+    {% endfor %}
+</ul>
+<btn class="btn btn-primary" onclick="history.go(-1);">Retour</btn>
+{% endblock %}

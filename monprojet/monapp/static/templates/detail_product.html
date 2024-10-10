@@ -10,6 +10,13 @@
     <li>Prix HT : {{ product.price_ht }}</li>
     <li>Prix TTC: {{ product.price_ttc }}</li>
     <li>Date de création : {{ product.date_creation }}</li>
+    <li>Fournisseurs :
+        <ul>
+            {% for supplier in product.suppliers.all %}
+                <li><a href="{% url 'detail_supplier' supplier.id %}">{{ supplier.name }}</a></li>
+            {% endfor %}
+        </ul>
+    </li>
 </ul>
 <a href="{% url 'update_product' product.id %}" class="btn btn-primary mt-3">Modifier</a>
 <a href="{% url 'delete_product' product.id %}" class="btn btn-danger mt-3">Supprimer</a>

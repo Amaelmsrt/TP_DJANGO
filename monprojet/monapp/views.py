@@ -5,7 +5,7 @@ from django.core.mail import send_mail
 from django.urls import reverse_lazy
 
 from monapp.forms import ContactUsForm, ProductAttributeForm, ProductForm, ProductItemForm, ProductAttributeValueForm
-from .models import Product, ProductAttribute, ProductAttributeValue, ProductItem
+from .models import Product, ProductAttribute, ProductAttributeValue, ProductItem, Supplier
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import LoginView
@@ -93,6 +93,16 @@ class ProductDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(ProductDetailView, self).get_context_data(**kwargs) 
         context['titremenu'] = "Détail produit"
+        return context
+
+class SupplierDetailView(DetailView):
+    model = Supplier
+    template_name = "detail_supplier.html"
+    context_object_name = "supplier"
+
+    def get_context_data(self, **kwargs):
+        context = super(SupplierDetailView, self).get_context_data(**kwargs)
+        context['titremenu'] = "Détail fournisseur"
         return context
 
 class ConnectView(LoginView):
