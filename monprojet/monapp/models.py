@@ -34,7 +34,7 @@ class Product(models.Model):
     status        = models.SmallIntegerField(choices=PRODUCT_STATUS, default=0)
     date_creation = models.DateTimeField(blank=True, verbose_name="Date création", default=timezone.now)
     suppliers     = models.ManyToManyField("Supplier", related_name="products", through='ProductSupplier')
-    image         = models.ImageField(upload_to='img/', null=True, blank=True, verbose_name="Image du produit")
+    image         = models.FileField(upload_to='img/', null=True, blank=True, verbose_name="Image du produit")
 
     def __str__(self):
         """

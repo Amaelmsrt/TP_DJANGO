@@ -25,7 +25,7 @@ class AboutView(TemplateView):
     def post(self, request, **kwargs):
         return render(request, self.template_name)
 
-def ContactView(request): 
+def ContactView(request):
     titreh1 = "Contact us !"
     if request.method=='POST':
         form = ContactUsForm(request.POST) 
