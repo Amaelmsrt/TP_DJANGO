@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, ProductItem, ProductAttribute, ProductAttributeValue
+from .models import Product, ProductItem, ProductAttribute, ProductAttributeValue, Supplier
 
 class ProductItemAdmin(admin.TabularInline): 
     model = ProductItem
@@ -30,8 +30,6 @@ def set_product_offline(modeladmin, request, queryset):
     queryset.update(status=0)
     set_product_offline.short_description = "Mettre hors ligne"
 
-
-
 class ProductAdmin(admin.ModelAdmin): 
     model = Product
     inlines = [ProductItemAdmin,]
@@ -46,8 +44,9 @@ class ProductAdmin(admin.ModelAdmin):
     tax.short_description = "Taxes (%)" 
     tax.admin_order_field = "price_ht"
 
-
-
+class SupplierAdmin(admin.ModelAdmin):
+    list_display = ["name", "address", "phone", "email"]
+    search_fields = ["name", "address", "phone", "email"]
 
 admin.site.register(Product, ProductAdmin) 
 admin.site.register(ProductItem) 
