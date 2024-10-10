@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Mon app DJANGO - Produits{% endblock %}
 
@@ -13,24 +14,23 @@
     <button type="submit" class="btn btn-success mt-2">Rechercher</button>
 </form>
 
-<p>J'ai {% if prdcts|length < 5 %} peu de {% elif prdcts|length < 10 %} quelques {% else %} beaucoup de {% endif %}
-        produits préférés.</p>
-        <p>Mes produits préférés sont :</p>
-        <div class="container">
-            <div class="row">
-                {% for prdct in products %}
-                <div class="col-md-1">
-                    <div class="card mb-4 shadow-sm">
-                        <img src="{{ prdct.image.url }}" alt="{{ prdct.name }}" class="card-img-top img-thumbnail" style="width: 5rem; height: 5rem;">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ prdct.name }}</h5>
-                            <p class="card-text">Prix HT: {{ prdct.price_ht }} €</p>
-                            <p class="card-text">Prix TTC: {{ prdct.price_ttc }} €</p>
-                            <a href="{% url 'detail_product' prdct.id %}" class="btn btn-primary">Voir le détail</a>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
+<p>J'ai {% if products|length < 5 %} peu de {% elif products|length < 10 %} quelques {% else %} beaucoup de {% endif %}
+produits préférés.</p>
+<p>Mes produits préférés sont :</p>
+
+<div class="list-products">
+    {% for prdct in products %}
+        <div class="product-card">
+            <img src="{{ prdct.image.url }}" alt="{{ prdct.name }}" class="product-img">
+            <h2>{{ prdct.name }}</h2>
+            <p>Prix TTC: {{ prdct.price_ttc }} €</p>
+            <div class="buttons">
+                <a href="{% url 'detail_product' prdct.id %}" class="btn btn-primary">Voir le détail</a>
+                <a href="" class="btn btn-primary">
+                    <img src="{% static 'icons/shopping_cart.svg' %}">
+                </a>
             </div>
         </div>
+    {% endfor %}
+</div>
 {% endblock %}
