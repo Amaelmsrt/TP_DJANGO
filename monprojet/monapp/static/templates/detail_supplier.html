@@ -3,18 +3,89 @@
 {% block title %}Mon app DJANGO - Détail du produit{% endblock %}
 
 {% block menu %} <h1>{{ titremenu }}</h1> {% endblock %}
+
 {% block content %}
 <h2>{{ supplier.name }}</h2>
 <ul>
-    <li>Adresse : {{  supplier.address }}</li>
+    <li>Adresse : {{ supplier.address }}</li>
     <li>Téléphone : {{ supplier.phone }}</li>
     <li>Email : {{ supplier.email }}</li>
 </ul>
 Vend les produits suivants :
-<ul>
-    {% for product in supplier.products.all %}
-        <li><a href="{% url 'detail_product' product.id %}">{{ product.name }}</a></li>
-    {% endfor %}
-</ul>
-<btn class="btn btn-primary" onclick="history.go(-1);">Retour</btn>
+
+<div class="carrousel">
+    <div class="product-card" 
+        data-products='{% for product in products %}
+                            {"name": "{{ product.name }}", 
+                            "image_url": "{{ product.image.url }}"}
+                            {% if not forloop.last %},{% endif %}
+                        {% endfor %}'>
+
+        <img id="image-produit" src="{{ products.0.image.url }}" alt="{{ products.0.name }}" class="image-produit" style="width: 10rem; height: 10rem;">
+        <h2 id="product-title" class="product-title">{{ products.0.name }}</h2>
+    </div>
+    <div class="boutons">
+        <button class="defilement" id="btn-precedent">Précédent</button>
+        <button class="defilement" id="btn-suivant">Suivant</button>
+    </div>
+</div>
+<button class="btn btn-primary" onclick="history.go(-1);">Retour</button>
+{% endblock %}
+
+{% block script %}
+<script>
+    let index = 0;
+    const btnPrecedent = document.querySelector('#btn-precedent');
+    const btnSuivant = document.querySelector('#btn-suivant');
+    const imageProduit = document.querySelector('#image-produit');
+    const productTitle = document.querySelector('#product-title');
+    const productCard = document.querySelector('.product-card');
+    const productsData = productCard.getAttribute('data-products');
+    const products = JSON.parse(`[${productsData}]`);
+    const tailleListe = products.length;
+    const btnBackgroundColor = btnPrecedent.style.backgroundColor;
+
+    function changerCarrousel(index) {
+        imageProduit.src = products[index].image_url;
+        imageProduit.alt = products[index].name;
+        productTitle.textContent = products[index].name;
+        changerBoutons();
+    }
+
+    function changerBoutons() {
+        btnPrecedent.disabled = (index === 0);
+        btnSuivant.disabled = (index === tailleListe - 1);
+        if (btnPrecedent.disabled) {
+            btnPrecedent.style.backgroundColor = 'grey';
+            btnPrecedent.style.cursor = 'default';
+        } else {
+            btnPrecedent.style.backgroundColor = btnBackgroundColor;
+            btnPrecedent.style.cursor = 'pointer';
+        }
+        if (btnSuivant.disabled) {
+            btnSuivant.style.backgroundColor = 'grey';
+            btnSuivant.style.cursor = 'default';    
+        } else {
+            btnSuivant.style.backgroundColor = btnBackgroundColor;
+            btnSuivant.style.cursor = 'pointer';
+        }
+    }
+
+    btnPrecedent.addEventListener('click', () => {
+        if (index > 0) {
+            index--;
+            changerCarrousel(index);
+        }
+    });
+
+    btnSuivant.addEventListener('click', () => {
+        if (index < tailleListe - 1) {
+            index++;
+            changerCarrousel(index);
+        }
+    });
+
+    changerBoutons();
+
+</script>
 {% endblock %}
