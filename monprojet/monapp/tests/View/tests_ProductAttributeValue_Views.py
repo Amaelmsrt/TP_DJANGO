@@ -104,3 +104,22 @@ class ProductAttributeValueDeleteViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
         # Vérifier que l'objet est supprimé 
         self.assertEqual(ProductAttributeValue.objects.count(), 0)
+
+class ProductAttributeValueListViewTest(TestCase):
+    def setUp(self):
+        user = User.objects.create_user(username='testuser', password='secret')
+        self.client.login(username='testuser', password='secret')
+        self.product_attribute = ProductAttribute.objects.create(name="Couleur")
+        self.product_attribute_value = ProductAttributeValue.objects.create(value='Violet', product_attribute=self.product_attribute, position=1)
+
+    def test_list_view(self):
+        """
+        Tester que la vue de liste renvoie le bon template et affiche les bonnes données 
+        """
+        response = self.client.get(reverse('values')) 
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'list_values.html')
+        # Vérifier que le nom de l'attribut est affiché 
+        self.assertContains(response, 'Couleur')
+        # Vérifier que le nom de la valeur est affiché 
+        self.assertContains(response, 'Violet')
