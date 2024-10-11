@@ -23,8 +23,7 @@ produits préférés.</p>
         <div class="product-card">
             <img src="{{ prdct.image.url }}" alt="{{ prdct.name }}" class="product-img">
             <h2>{{ prdct.name }}</h2>
-            <p>Prix TTC entre : 
-            </p>
+            <p>Prix TTC entre : {{ prdct.min_price }} - {{ prdct.max_price }} €</p>
             <div class="buttons">
                 <a href="{% url 'detail_product' prdct.id %}" class="btn btn-primary">Voir le détail</a>
                 <a href="" class="btn btn-primary">

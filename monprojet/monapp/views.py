@@ -10,7 +10,7 @@ from django.views.generic import TemplateView, ListView, DetailView, CreateView,
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.models import User
-from django.db.models import Min, Max
+from django.db import models
 
 def ListProducts(request):
     prdcts = Product.objects.all()
@@ -53,7 +53,13 @@ class ProductListView(ListView):
         context = super().get_context_data(**kwargs)
         context['titremenu'] = "Liste des produits"
         products = Product.objects.all()
-        
+        for product in products:
+            product_suppliers = ProductSupplier.objects.filter(product=product)
+            min_price = product_suppliers.aggregate(models.Min('price'))['price__min']
+            max_price = product_suppliers.aggregate(models.Max('price'))['price__max']
+            product.min_price = min_price if min_price else 0
+            product.max_price = max_price if max_price else 0
+        context['products'] = products
         return context
 
 class ProductAttributeListView(ListView): 
