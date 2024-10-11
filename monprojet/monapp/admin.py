@@ -36,13 +36,8 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = (ProductFilter,)
     date_hierarchy = 'date_creation'
     actions = [set_product_online, set_product_offline] 
-    list_display = ["code", "name", "price_ht", "price_ttc", "tax", "image"] 
-    list_editable = ["name", "price_ht", "price_ttc", "image"]
-
-    def tax(self, instance):
-        return ((instance.price_ttc / instance.price_ht) - 1) * 100
-    tax.short_description = "Taxes (%)" 
-    tax.admin_order_field = "price_ht"
+    list_display = ["code", "name", "image"] 
+    list_editable = ["name", "image"]
 
 class ProductSupplierInline(admin.TabularInline):
     model = ProductSupplier

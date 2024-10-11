@@ -5,11 +5,12 @@ from django.core.mail import send_mail
 from django.urls import reverse_lazy
 
 from monapp.forms import ContactUsForm, ProductAttributeForm, ProductForm, ProductItemForm, ProductAttributeValueForm
-from .models import Product, ProductAttribute, ProductAttributeValue, ProductItem, Supplier
+from .models import Product, ProductAttribute, ProductAttributeValue, ProductItem, Supplier, ProductSupplier
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.models import User
+from django.db.models import Min, Max
 
 def ListProducts(request):
     prdcts = Product.objects.all()
@@ -48,20 +49,11 @@ class ProductListView(ListView):
     template_name = "list_products.html" 
     context_object_name = "products"
 
-    def get_queryset(self ):
-    # Surcouche pour filtrer les résultats en fonction de la recherche 
-    # Récupérer le terme de recherche depuis la requête GET
-        query = self.request.GET.get('search')
-        if query:
-            # Filtre les produits par nom (insensible à la casse) 
-            return Product.objects.filter(name__icontains=query)
-
-        # Si aucun terme de recherche, retourner tous les produits 
-        return Product.objects.all()
-
     def get_context_data(self, **kwargs):
-        context = super(ProductListView, self).get_context_data(**kwargs) 
+        context = super().get_context_data(**kwargs)
         context['titremenu'] = "Liste des produits"
+        products = Product.objects.all()
+        
         return context
 
 class ProductAttributeListView(ListView): 
@@ -93,6 +85,8 @@ class ProductDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(ProductDetailView, self).get_context_data(**kwargs) 
         context['titremenu'] = "Détail produit"
+        product_suppliers = ProductSupplier.objects.filter(product=self.object)
+        context['product_suppliers'] = product_suppliers
         return context
 
 class SupplierDetailView(DetailView):
@@ -291,3 +285,8 @@ class ProductAttributeValueDetailView(DetailView):
         context = super(ProductAttributeValueDetailView, self).get_context_data(**kwargs) 
         context['titremenu'] = "Détail valeur d'attribut"
         return context
+
+class ShoppingCartView(TemplateView): 
+    template_name = "shopping_cart.html"
+    def post(self, request, **kwargs):
+        return render(request, self.template_name)

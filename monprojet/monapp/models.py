@@ -29,8 +29,6 @@ class Product(models.Model):
 
     name          = models.CharField(max_length=100)
     code          = models.CharField(max_length=10, null=True, blank=True, unique=True)
-    price_ht      = models.DecimalField(max_digits=8, decimal_places=2,  null=True, blank=True, verbose_name="Prix unitaire HT")
-    price_ttc     = models.DecimalField(max_digits=8, decimal_places=2,  null=True, blank=True, verbose_name="Prix unitaire TTC")
     status        = models.SmallIntegerField(choices=PRODUCT_STATUS, default=0)
     date_creation = models.DateTimeField(blank=True, verbose_name="Date création", default=timezone.now)
     suppliers     = models.ManyToManyField("Supplier", related_name="products", through='ProductSupplier')
@@ -48,7 +46,7 @@ class ProductSupplier(models.Model):
     """
     product = models.ForeignKey('Product', on_delete=models.CASCADE)
     supplier = models.ForeignKey('Supplier', on_delete=models.CASCADE)
-    price = models.DecimalField(max_digits=10, decimal_places=2,  null=True, blank=True, verbose_name="Prix unitaire HT")
+    price = models.DecimalField(max_digits=10, decimal_places=2,  null=True, blank=True, verbose_name="Prix unitaire TTC")
     quantity = models.PositiveIntegerField(null=True, blank=True, verbose_name="Quantité en stock")
 
     class Meta:

@@ -36,6 +36,12 @@
                         <a class="nav-link" href="{% url 'register' %}">Inscription</a>
                     </li>
                     {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'shopping_cart' %}">
+                            Mon panier
+                            <img src="{% static 'icons/shopping_cart.svg' %}" alt="Panier" style="width: 1rem; margin-left: 0.5rem;">
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </div>
