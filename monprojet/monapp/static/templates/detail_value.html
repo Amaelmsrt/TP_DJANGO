@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}
+Détails de la Valeur d'Attribut
+{% endblock %}
+
+{% block content %}
+<h1>Détails de la Valeur d'Attribut</h1>
+
+<table>
+    <tr>
+        <th>Valeur</th>
+        <td>{{ productattributevalue.value }}</td>
+    </tr>
+    <tr>
+        <th>Attribut</th>
+        <td>{{ productattributevalue.product_attribute.name }}</td>
+    </tr>
+    <tr>
+        <th>Position</th>
+        <td>{{ productattributevalue.position }}</td>
+    </tr>
+</table>
+
+<a href="{% url 'update_value' productattributevalue.id %}">Modifier</a> |
+<a href="{% url 'delete_value' productattributevalue.id %}">Supprimer</a> |
+<a href="{% url 'values' %}">Retour à la liste</a>
+
+{% endblock %}

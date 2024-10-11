@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}
+Liste des Valeurs d'Attributs
+{% endblock %}
+
+{% block content %}
+<h1>Liste des Valeurs d'Attributs</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Valeur</th>
+            <th>Attribut</th>
+            <th>Position</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for value in productattributevalues %}
+        <tr>
+            <td>{{ value.value }}</td>
+            <td>{{ value.product_attribute.name }}</td>
+            <td>{{ value.position }}</td>
+            <td>
+                <a href="{% url 'detail_value' value.id %}">Détails</a> |
+                <a href="{% url 'update_value' value.id %}">Modifier</a> |
+                <a href="{% url 'delete_value' value.id %}">Supprimer</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">Aucune valeur d'attribut trouvée.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'new_value' %}">Ajouter une nouvelle valeur</a>
+
+{% endblock %}

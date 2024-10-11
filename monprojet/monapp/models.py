@@ -72,7 +72,7 @@ class Order(models.Model):
         """
         Retourne une représentation en chaîne de caractères de la commande.
         """
-        return "{0} {1}".format(self.supplier, self.date_creation)
+        return "{0}".format(self.supplier)
 
 class OrderItem(models.Model):
     """
@@ -104,7 +104,7 @@ class ProductItem(models.Model):
         Retourne une représentation en chaîne de caractères de la déclinaison de produit.
         """
         return "{0} {1}".format(self.product, self.code)
-    
+
 class ProductAttribute(models.Model):
     """
     Modèle représentant un attribut de produit.
