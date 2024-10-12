@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'monapp',
     'debug_toolbar',
+    'rest_framework',
 ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
