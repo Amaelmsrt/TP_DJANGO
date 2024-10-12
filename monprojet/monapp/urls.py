@@ -1,6 +1,11 @@
-from django.urls import path 
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from . import views
-from django.views.generic import *
+from .viewsAPI import ProductViewSet, StatusViewSet
+
+router = DefaultRouter()
+router.register(r'products', ProductViewSet)
+router.register(r'statuses', StatusViewSet)
 
 urlpatterns = [
     path("", views.HomeView.as_view(), name="home"),
@@ -11,9 +16,9 @@ urlpatterns = [
     path('login/', views.ConnectView.as_view(), name='login'), 
     path('register/', views.RegisterView.as_view(), name='register'),
     path('logout/', views.DisconnectView.as_view(), name='logout'),
-    path("produit/add/",views.ProductCreateView.as_view(), name="new_product"),
-    path("produit/<pk>/update/",views.ProductUpdateView.as_view(), name="update_product"),
-    path("produit/<pk>/delete/",views.ProductDeleteView.as_view(), name="delete_product"),
+    path("produit/add/", views.ProductCreateView.as_view(), name="new_product"),
+    path("produit/<pk>/update/", views.ProductUpdateView.as_view(), name="update_product"),
+    path("produit/<pk>/delete/", views.ProductDeleteView.as_view(), name="delete_product"),
     path("attribut/", views.ProductAttributeListView.as_view(), name="attributs"),
     path("attribut/<pk>", views.ProductAttributeDetailView.as_view(), name="detail_attribut"),
     path("attribut/<pk>/update/", views.AttributeUpdateView.as_view(), name="update_attribut"),
@@ -34,4 +39,5 @@ urlpatterns = [
     path('update_cart/<int:product_supplier_id>/', views.update_cart, name='update_cart'),
     path('remove_from_cart/<int:product_supplier_id>/', views.remove_from_cart, name='remove_from_cart'),
     path("cart/", views.cart_detail, name="cart_detail"),
+    path('api/', include(router.urls)),
 ]
