@@ -5,11 +5,13 @@ from django.core.mail import send_mail
 from django.urls import reverse_lazy
 
 from monapp.forms import ContactUsForm, ProductAttributeForm, ProductForm, ProductItemForm, ProductAttributeValueForm
-from .models import Product, ProductAttribute, ProductAttributeValue, ProductItem
+from .models import Product, ProductAttribute, ProductAttributeValue, ProductItem, Supplier, ProductSupplier, Cart, CartItem
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.models import User
+from django.db import models
+from django.contrib.auth.decorators import login_required
 
 def ListProducts(request):
     prdcts = Product.objects.all()
@@ -25,7 +27,7 @@ class AboutView(TemplateView):
     def post(self, request, **kwargs):
         return render(request, self.template_name)
 
-def ContactView(request): 
+def ContactView(request):
     titreh1 = "Contact us !"
     if request.method=='POST':
         form = ContactUsForm(request.POST) 
@@ -48,27 +50,24 @@ class ProductListView(ListView):
     template_name = "list_products.html" 
     context_object_name = "products"
 
-    def get_queryset(self ):
-    # Surcouche pour filtrer les résultats en fonction de la recherche 
-    # Récupérer le terme de recherche depuis la requête GET
-        query = self.request.GET.get('search')
-        if query:
-            # Filtre les produits par nom (insensible à la casse) 
-            return Product.objects.filter(name__icontains=query)
-
-        # Si aucun terme de recherche, retourner tous les produits 
-        return Product.objects.all()
-
     def get_context_data(self, **kwargs):
-        context = super(ProductListView, self).get_context_data(**kwargs) 
+        context = super().get_context_data(**kwargs)
         context['titremenu'] = "Liste des produits"
+        products = Product.objects.all()
+        for product in products:
+            product_suppliers = ProductSupplier.objects.filter(product=product)
+            min_price = product_suppliers.aggregate(models.Min('price'))['price__min']
+            max_price = product_suppliers.aggregate(models.Max('price'))['price__max']
+            product.min_price = min_price if min_price else 0
+            product.max_price = max_price if max_price else 0
+        context['products'] = products
         return context
 
 class ProductAttributeListView(ListView): 
     model = ProductAttribute
     template_name = "list_attributes.html" 
     context_object_name = "productattributes"
-    def get_queryset(self ):
+    def get_queryset(self):
         return ProductAttribute.objects.all().prefetch_related('productattributevalue_set')
     def get_context_data(self, **kwargs):
         context = super(ProductAttributeListView, self).get_context_data(**kwargs) 
@@ -93,6 +92,19 @@ class ProductDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(ProductDetailView, self).get_context_data(**kwargs) 
         context['titremenu'] = "Détail produit"
+        product_suppliers = ProductSupplier.objects.filter(product=self.object)
+        context['product_suppliers'] = product_suppliers
+        return context
+
+class SupplierDetailView(DetailView):
+    model = Supplier
+    template_name = "detail_supplier.html"
+    context_object_name = "supplier"
+
+    def get_context_data(self, **kwargs):
+        context = super(SupplierDetailView, self).get_context_data(**kwargs)
+        context['titremenu'] = "Détail fournisseur"
+        context['products'] = self.object.products.all()
         return context
 
 class ConnectView(LoginView):
@@ -280,3 +292,39 @@ class ProductAttributeValueDetailView(DetailView):
         context = super(ProductAttributeValueDetailView, self).get_context_data(**kwargs) 
         context['titremenu'] = "Détail valeur d'attribut"
         return context
+
+@login_required
+def cart_detail(request):
+    cart = Cart.objects.filter(user=request.user).first()
+    if not cart:
+        cart = Cart.objects.create(user=request.user)
+    total_price = 0
+    for item in cart.items.all():
+        total_price += item.product_supplier.price * item.quantity
+    return render(request, 'cart_detail.html', {'cart': cart, 'total_price': total_price})
+
+@login_required
+def add_to_cart(request, product_supplier_id):
+    product_supplier = ProductSupplier.objects.get(id=product_supplier_id)
+    cart = Cart.objects.filter(user=request.user).first()
+    if not cart:
+        cart = Cart.objects.create(user=request.user)
+    cart.add_product(product_supplier)
+    return redirect('cart_detail')
+
+@login_required
+def update_cart(request, product_supplier_id):
+    quantity = request.POST.get('quantity', 1)
+    quantity = int(quantity)
+    product_supplier = ProductSupplier.objects.get(id=product_supplier_id)
+    cart_item = CartItem.objects.filter(cart__user=request.user, product_supplier=product_supplier).first()
+    cart_item.quantity = quantity
+    cart_item.save()
+    return redirect('cart_detail')
+
+@login_required
+def remove_from_cart(request, product_supplier_id):
+    product_supplier = ProductSupplier.objects.get(id=product_supplier_id)
+    cart = Cart.objects.filter(user=request.user).first()
+    cart.remove_product(product_supplier)
+    return redirect('cart_detail')

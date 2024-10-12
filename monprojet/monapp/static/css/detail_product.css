@@ -1,0 +1,15 @@
+.btn-panier {
+    background-color: #007bff;
+    cursor: pointer;
+}
+
+.btn-panier img {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.fournisseur-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}

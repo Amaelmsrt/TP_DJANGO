@@ -34,6 +34,10 @@ urlpatterns = [
     path("value/add/", views.ProductAttributeValueCreateView.as_view(), name="new_value"),
     path("value/<pk>/update/", views.ProductAttributeValueUpdateView.as_view(), name="update_value"),
     path("value/<pk>/delete/", views.ProductAttributeValueDeleteView.as_view(), name="delete_value"),
-    
+    path("supplier/<pk>/", views.SupplierDetailView.as_view(), name="detail_supplier"),
+    path('add_to_cart/<int:product_supplier_id>/', views.add_to_cart, name='add_to_cart'),
+    path('update_cart/<int:product_supplier_id>/', views.update_cart, name='update_cart'),
+    path('remove_from_cart/<int:product_supplier_id>/', views.remove_from_cart, name='remove_from_cart'),
+    path("cart/", views.cart_detail, name="cart_detail"),
     path('api/', include(router.urls)),
 ]

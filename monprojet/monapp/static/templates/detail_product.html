@@ -1,16 +1,31 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Mon app DJANGO - Détail du produit{% endblock %}
 
 {% block menu %} <h1>{{titremenu}}</h1> {% endblock %}
 {% block content %}
+<img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img" style="width: 20vw; height: 20vh;">
 <h2>{{ product.name }}</h2>
 <ul>
     <li>Code : {{ product.code }}</li>
-    <li>Prix HT : {{ product.price_ht }}</li>
-    <li>Prix TTC: {{ product.price_ttc }}</li>
     <li>Date de création : {{ product.date_creation }}</li>
+    <li>Fournisseurs :
+        <ul>
+            {% for product_supplier in product_suppliers %}
+                <li>
+                    <div class="fournisseur-content">
+                        <a href="{% url 'detail_supplier' product_supplier.supplier.id %}">{{ product_supplier.supplier.name }} </a>
+                        - Prix : {{ product_supplier.price }} € 
+                        <form method="post" action="{% url 'add_to_cart' product_supplier.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-panier"><img src="{% static 'icons/shopping_cart.svg' %}" alt="Panier"></button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </li>
 </ul>
 <a href="{% url 'update_product' product.id %}" class="btn btn-primary mt-3">Modifier</a>
-<a href="{% url 'delete_product' product.id %}" class="btn btn-danger mt-3">Supprimer</a>
 {% endblock %}

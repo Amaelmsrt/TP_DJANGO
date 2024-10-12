@@ -6,7 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Mon app DJANGO{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/list_products.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/detail_product.css' %}"/>
 </head>
 
 <body>
@@ -35,6 +37,12 @@
                         <a class="nav-link" href="{% url 'register' %}">Inscription</a>
                     </li>
                     {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'cart_detail' %}">
+                            Mon panier
+                            <img src="{% static 'icons/shopping_cart.svg' %}" alt="Panier" style="width: 1rem; margin-left: 0.5rem;">
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </div>
@@ -49,6 +57,9 @@
     <footer>
         <p>Mon app DJANGO &copy; 2023</p>
     </footer>
+
+    {% block script %}
+    {% endblock %}
 </body>
 
 </html>
