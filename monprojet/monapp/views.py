@@ -5,12 +5,13 @@ from django.core.mail import send_mail
 from django.urls import reverse_lazy
 
 from monapp.forms import ContactUsForm, ProductAttributeForm, ProductForm, ProductItemForm, ProductAttributeValueForm
-from .models import Product, ProductAttribute, ProductAttributeValue, ProductItem, Supplier, ProductSupplier
+from .models import Product, ProductAttribute, ProductAttributeValue, ProductItem, Supplier, ProductSupplier, Cart, CartItem
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.models import User
 from django.db import models
+from django.contrib.auth.decorators import login_required
 
 def ListProducts(request):
     prdcts = Product.objects.all()
@@ -66,7 +67,7 @@ class ProductAttributeListView(ListView):
     model = ProductAttribute
     template_name = "list_attributes.html" 
     context_object_name = "productattributes"
-    def get_queryset(self ):
+    def get_queryset(self):
         return ProductAttribute.objects.all().prefetch_related('productattributevalue_set')
     def get_context_data(self, **kwargs):
         context = super(ProductAttributeListView, self).get_context_data(**kwargs) 
@@ -292,7 +293,18 @@ class ProductAttributeValueDetailView(DetailView):
         context['titremenu'] = "Détail valeur d'attribut"
         return context
 
-class ShoppingCartView(TemplateView): 
-    template_name = "shopping_cart.html"
-    def post(self, request, **kwargs):
-        return render(request, self.template_name)
+@login_required
+def add_to_cart(request, product_supplier_id):
+    product_supplier = ProductSupplier.objects.get(id=product_supplier_id)
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    cart.add_product(product_supplier)
+    return redirect('cart_detail')
+
+@login_required
+def cart_detail(request):
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    return render(request, 'cart_detail.html', {'cart': cart})
+
+@login_required
+def remove_from_cart(request, product_supplier_id, quantity):
+    pass

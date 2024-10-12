@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 PRODUCT_STATUS = (
     (0, 'Offline'),
@@ -154,3 +155,40 @@ class Supplier(models.Model):
         Retourne une représentation en chaîne de caractères du fournisseur.
         """
         return self.name
+
+class Cart(models.Model):
+    """
+    Modèle représentant un panier d'utilisateur.
+    """
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='cart')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Panier de {self.user.username}"
+
+    def add_product(self, product_supplier, quantity=1):
+        cart_item, created = CartItem.objects.get_or_create(cart=self, product_supplier=product_supplier)
+        if not created:
+            cart_item.quantity += quantity
+        cart_item.save()
+
+    def remove_product(self, product_supplier):
+        CartItem.objects.filter(cart=self, product_supplier=product_supplier).delete()
+
+    def clear_cart(self):
+        CartItem.objects.filter(cart=self).delete()
+
+class CartItem(models.Model):
+    """
+    Modèle représentant un article dans le panier.
+    """
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+    product_supplier = models.ForeignKey(ProductSupplier, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.quantity} x {self.product_supplier.product.name}"
+
+    @property
+    def total_price(self):
+        return self.quantity * self.product_supplier.price

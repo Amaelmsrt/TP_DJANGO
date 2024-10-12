@@ -22,10 +22,3 @@
     margin-top: 1rem;
     justify-content: space-between;
 }
-
-.list-products > .product-card > .buttons > button {
-    padding: 0.5rem 1rem;
-    border: none;
-    background-color: #f1f1f1;
-    cursor: pointer;
-}

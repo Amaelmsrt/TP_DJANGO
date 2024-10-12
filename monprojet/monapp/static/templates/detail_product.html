@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Mon app DJANGO - Détail du produit{% endblock %}
 
@@ -8,14 +9,19 @@
 <h2>{{ product.name }}</h2>
 <ul>
     <li>Code : {{ product.code }}</li>
-    <li>Prix : {{ product.price }} €</li>
     <li>Date de création : {{ product.date_creation }}</li>
     <li>Fournisseurs :
         <ul>
             {% for product_supplier in product_suppliers %}
                 <li>
-                    <a href="{% url 'detail_supplier' product_supplier.supplier.id %}">{{ product_supplier.supplier.name }} </a>
-                    - Prix : {{ product_supplier.price }} €
+                    <div class="fournisseur-content">
+                        <a href="{% url 'detail_supplier' product_supplier.supplier.id %}">{{ product_supplier.supplier.name }} </a>
+                        - Prix : {{ product_supplier.price }} € 
+                        <form method="post" action="{% url 'add_to_cart' product_supplier.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-panier"><img src="{% static 'icons/shopping_cart.svg' %}" alt="Panier"></button>
+                        </form>
+                    </div>
                 </li>
             {% endfor %}
         </ul>
