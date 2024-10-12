@@ -167,16 +167,21 @@ class Cart(models.Model):
         return f"Panier de {self.user.username}"
 
     def add_product(self, product_supplier, quantity=1):
-        cart_item, created = CartItem.objects.get_or_create(cart=self, product_supplier=product_supplier)
-        if not created:
+        cart_item = CartItem.objects.filter(cart=self, product_supplier=product_supplier).first()
+        if cart_item:
             cart_item.quantity += quantity
-        cart_item.save()
+            cart_item.save()
+        else:
+            CartItem.objects.create(cart=self, product_supplier=product_supplier, quantity=quantity)
+
+    def update_quantity(self, product_supplier, quantity):
+        cart_item = CartItem.objects.filter(cart=self, product_supplier=product_supplier).first()
+        if cart_item:
+            cart_item.quantity = quantity
+            cart_item.save()
 
     def remove_product(self, product_supplier):
         CartItem.objects.filter(cart=self, product_supplier=product_supplier).delete()
-
-    def clear_cart(self):
-        CartItem.objects.filter(cart=self).delete()
 
 class CartItem(models.Model):
     """
