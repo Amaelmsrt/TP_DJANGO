@@ -6,9 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Mon app DJANGO{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}"/>
-    <link rel="stylesheet" href="{% static 'css/list_products.css' %}"/>
-    <link rel="stylesheet" href="{% static 'css/detail_product.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/list_products.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/detail_product.css' %}" />
 </head>
 
 <body>
@@ -22,15 +22,26 @@
                     <li><a href="{% url 'home' %}">Accueil</a></li>
                     <li><a href="{% url 'about' %}">À propos</a></li>
                     <li><a href="{% url 'contact' %}">Contact</a></li>
-                    <li><a href="{% url 'produits' %}">Produits</a></li>
+                    <li><a href="{% url 'orders' %}">Commandes</a></li>
+
+                    {% if user.is_admin %}
+
                     <li><a href="{% url 'attributs' %}">Attributs</a></li>
                     <li><a href="{% url 'items' %}">Items</a></li>
+                    {% endif %}
+
+                    <li><a href="{% url 'suppliers' %}">Fournisseurs</a></li>
+
+                    <li><a href="{% url 'produits' %}">Produits</a></li>
+                    {% if user.is_utilisateur %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'cart_detail' %}">
                             Mon panier
-                            <img src="{% static 'icons/shopping_cart.svg' %}" alt="Panier" style="width: 1rem; margin-left: 0.5rem;">
+                            <img src="{% static 'icons/shopping_cart.svg' %}" alt="Panier"
+                                style="width: 1rem; margin-left: 0.5rem;">
                         </a>
                     </li>
+                    {% endif %}
                     {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Déconnexion</a>

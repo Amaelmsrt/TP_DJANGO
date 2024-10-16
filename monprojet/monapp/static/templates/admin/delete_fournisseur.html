@@ -1,0 +1,12 @@
+<!-- admin/delete_fournisseur.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Supprimer Fournisseur</h1>
+<p>Êtes-vous sûr de vouloir supprimer ce fournisseur ?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Confirmer</button>
+    <a href="{% url 'suppliers' %}">Annuler</a>
+</form>
+{% endblock %}

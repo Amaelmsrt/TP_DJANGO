@@ -5,7 +5,7 @@ from django.core.mail import send_mail
 from django.urls import reverse_lazy
 
 from monapp.forms import ContactUsForm, ProductAttributeForm, ProductForm, ProductItemForm, ProductAttributeValueForm
-from .models import Product, ProductAttribute, ProductAttributeValue, ProductItem, Supplier, ProductSupplier, Cart, CartItem
+from .models import Product, ProductAttribute, ProductAttributeValue, ProductItem, Supplier, ProductSupplier, Cart, CartItem, Order
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import LoginView
@@ -114,7 +114,7 @@ class ConnectView(LoginView):
     def post(self, request, **kwargs):
         username = request.POST.get('username', False)
         password = request.POST.get('password', False)
-        user = authenticate(username=username, password=password) 
+        user = authenticate(request, username=username, password=password)
         if user is not None and user.is_active:
             login(request, user)
             return render(request, 'home.html')
@@ -341,8 +341,8 @@ class OrderValidationView(TemplateView):
 def remove_from_cart(request, product_supplier_id):
     product_supplier = ProductSupplier.objects.get(id=product_supplier_id)
     cart = Cart.objects.filter(user=request.user).first()
-    cart.remove_product(product_supplier)
-    return redirect('order_validation.html')
+    cart.remove_product(product_supplier
+    return redirect('cart_detail.html')
 
 @login_required
 def validate_order(request):
@@ -353,3 +353,57 @@ def validate_order(request):
         product_supplier.save()
     cart.clear_cart()
     return redirect('order_validation.html')
+                        
+# Admin views
+
+class SupplierListView(TemplateView):
+    template_name = "admin/fournisseur.html"
+    def get(self, request, **kwargs):
+        suppliers = Supplier.objects.all()
+        return render(request, self.template_name, {'suppliers': suppliers})
+
+# edit supplier
+
+class SupplierUpdateView(UpdateView):
+    model = Supplier
+    fields = ['name', 'address', 'phone', 'email']
+    template_name = "admin/edit_fournisseur.html"
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        supplier = form.save()
+        return redirect('suppliers')
+
+# delete supplier
+
+class SupplierDeleteView(DeleteView):
+    model = Supplier
+    template_name = "admin/delete_fournisseur.html"
+    success_url = reverse_lazy('suppliers')
+
+# add supplier
+
+class SupplierCreateView(CreateView):
+    model = Supplier
+    fields = ['name', 'address', 'phone', 'email']
+    template_name = "admin/new_fournisseur.html"
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        supplier = form.save()
+        return redirect('fournisseur')
+
+class OrderListView(TemplateView):
+    template_name = "admin/orders.html"
+    def get(self, request, **kwargs):
+        orders = Order.objects.all()
+        return render(request, self.template_name, {'orders': orders})
+
+# Order Add View
+
+class OrderCreateView(CreateView):
+    model = Order
+    fields = ['product', 'supplier', 'quantity']
+    template_name = "admin/new_order.html"
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        order = form.save()
+        return redirect('orders')
