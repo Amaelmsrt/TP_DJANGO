@@ -1,0 +1,162 @@
+<!-- admin/orders.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Liste des Commandes</h1>
+
+<h2>Commandes en Préparation</h2>
+<a href="{% url 'new_order' %}" class="btn btn-primary">Créer une Nouvelle Commande</a>
+<table class="table" id="preparationTable">
+    <thead>
+        <tr>
+            <th>Produit</th>
+            <th>Fournisseur</th>
+            <th>Quantité</th>
+            <th>Date</th>
+            <th>Statut</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+
+        {% if order.status == 0 %}
+        <tr>
+            <td>{{ order.product }}</td>
+            <td>{{ order.supplier }}</td>
+            <td>{{ order.quantity }}</td>
+            <td>{{ order.date_creation }}</td>
+            <td>En préparation</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Commandes en Cours</h2>
+<table class="table" id="inProgressTable">
+    <thead>
+        <tr>
+            <th>Produit</th>
+            <th>Fournisseur</th>
+            <th>Quantité</th>
+            <th>Date</th>
+            <th>Statut</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        {% if order.status == 1 %}
+        <tr>
+            <td>{{ order.product }}</td>
+            <td>{{ order.supplier }}</td>
+            <td>{{ order.quantity }}</td>
+            <td>{{ order.date }}</td>
+            <td>En cours</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Commandes Passées</h2>
+<table class="table" id="completedTable">
+    <thead>
+        <tr>
+            <th>Produit</th>
+            <th>Fournisseur</th>
+            <th>Quantité</th>
+            <th>Date</th>
+            <th>Statut</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        {% if order.status == 2 %}
+        <tr>
+            <td>{{ order.product }}</td>
+            <td>{{ order.supplier }}</td>
+            <td>{{ order.quantity }}</td>
+            <td>{{ order.date }}</td>
+            <td>Terminée</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+<style>
+    .search-bar {
+        width: 100%;
+        padding: 12px 20px;
+        margin-bottom: 20px;
+        box-sizing: border-box;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        color: #fff;
+        cursor: pointer;
+        margin-right: 5px;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .table th,
+    .table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+    .table th {
+        background-color: #f2f2f2;
+    }
+
+    .table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .table tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    h1,
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+</style>

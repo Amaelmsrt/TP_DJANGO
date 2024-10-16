@@ -1,11 +1,15 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
-from .viewsAPI import ProductViewSet, StatusViewSet
+from .viewsAPI import ProductViewSet, StatusViewSet, SupplierSellProductViewSet, SupplierViewSet
 
 router = DefaultRouter()
 router.register(r'products', ProductViewSet)
-router.register(r'statuses', StatusViewSet)
+router.register(r'status', StatusViewSet)
+router.register(r'supplier_sell_product', SupplierSellProductViewSet)
+router.register(r'suppliers', SupplierViewSet)
+
+
 
 urlpatterns = [
     path("", views.HomeView.as_view(), name="home"),
@@ -39,5 +43,13 @@ urlpatterns = [
     path('update_cart/<int:product_supplier_id>/', views.update_cart, name='update_cart'),
     path('remove_from_cart/<int:product_supplier_id>/', views.remove_from_cart, name='remove_from_cart'),
     path("cart/", views.cart_detail, name="cart_detail"),
+    
+    path('admin-fournisseur/', views.SupplierListView.as_view(), name='suppliers'),
+    path('admin-fournisseur/add/', views.SupplierCreateView.as_view(), name='new_supplier'),
+    path('admin-fournisseur/<pk>/update/', views.SupplierUpdateView.as_view(), name='update_supplier'),
+    path('admin-fournisseur/<pk>/delete/', views.SupplierDeleteView.as_view(), name='delete_supplier'),
+    path('admin-order/', views.OrderListView.as_view(), name='orders'),
+    path('admin-order/add/', views.OrderCreateView.as_view(), name='new_order'),
+    
     path('api/', include(router.urls)),
 ]

@@ -1,12 +1,53 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 
 PRODUCT_STATUS = (
     (0, 'Offline'),
     (1, 'Online'),
     (2, 'Out of stock')              
 )
+
+class User(AbstractUser):
+    ADMIN = 'admin'
+    FOURNISSEUR = 'fournisseur'
+    UTILISATEUR = 'utilisateur'
+
+    ROLE_CHOICES = [
+        (ADMIN, 'Admin'),
+        (FOURNISSEUR, 'Fournisseur'),
+        (UTILISATEUR, 'Utilisateur'),
+    ]
+
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default=UTILISATEUR)
+
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='custom_user_set',  # Ajout d'un related_name unique
+        blank=True,
+        help_text='The groups this user belongs to.',
+        verbose_name='groups'
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='custom_user_permissions_set',  # Ajout d'un related_name unique
+        blank=True,
+        help_text='Specific permissions for this user.',
+        verbose_name='user permissions'
+    )
+
+    def is_admin(self):
+        return self.role == self.ADMIN
+    
+    def is_fournisseur(self):
+        return self.role == self.FOURNISSEUR
+    
+    def is_utilisateur(self):
+        return self.role == self.UTILISATEUR
+
+    def __str__(self):
+        return self.username
 
 class Status(models.Model):
     """
@@ -39,7 +80,7 @@ class Product(models.Model):
         """
         Retourne une représentation en chaîne de caractères du produit.
         """
-        return "{0} {1}".format(self.name, self.code)
+        return "{0}".format(self.name)
 
 class ProductSupplier(models.Model):
     """
@@ -49,6 +90,17 @@ class ProductSupplier(models.Model):
     supplier = models.ForeignKey('Supplier', on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2,  null=True, blank=True, verbose_name="Prix unitaire TTC")
     quantity = models.PositiveIntegerField(null=True, blank=True, verbose_name="Quantité en stock")
+
+    class Meta:
+        unique_together = ('product', 'supplier')
+
+class SupplierSellProduct(models.Model):
+    """
+    Modèle représentant la relation entre un fournisseur et un produit, c'est à dire les produits vendus par un fournisseur.
+    """
+    supplier = models.ForeignKey('Supplier', on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=10, decimal_places=2,  null=True, blank=True, verbose_name="Prix unitaire TTC")
 
     class Meta:
         unique_together = ('product', 'supplier')
@@ -66,27 +118,14 @@ class Order(models.Model):
     supplier = models.ForeignKey('Supplier', on_delete=models.CASCADE)
     status = models.SmallIntegerField(choices=STATUS, default=0)
     date_creation = models.DateTimeField(blank=True, verbose_name="Date création", default=timezone.now)
-    date_update = models.DateTimeField(blank=True, verbose_name="Date modification", default=timezone.now)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, default=1)
+    quantity = models.PositiveIntegerField(default=1)  # Ajout d'une valeur par défaut
 
     def __str__(self):
         """
         Retourne une représentation en chaîne de caractères de la commande.
         """
         return "{0}".format(self.supplier)
-
-class OrderItem(models.Model):
-    """
-    Modèle représentant un article dans une commande.
-    """
-    order = models.ForeignKey('Order', related_name='items', on_delete=models.CASCADE)
-    product = models.ForeignKey('Product', on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
-
-    def __str__(self):
-        """
-        Retourne une représentation en chaîne de caractères de l'article de commande.
-        """
-        return "{0} ({1})".format(self.product.name, self.quantity)
 
 class ProductItem(models.Model):
     """
@@ -160,7 +199,7 @@ class Cart(models.Model):
     """
     Modèle représentant un panier d'utilisateur.
     """
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='cart')
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -4,7 +4,9 @@
 
 {% block content %}
 <h1>{{ titremenu }}</h1>
+{% if user.is_admin %}
 <a class="btn btn-success mb-4" href="{% url 'new_product' %}">Nouveau produit</a>
+{% endif %}
 <!-- Barre de recherche -->
 <p class="lead mb-3 ml-0">Rechercher un élément...</p>
 <form method="GET" action="">
@@ -13,18 +15,14 @@
     <button type="submit" class="btn btn-success mt-2">Rechercher</button>
 </form>
 
-<p>J'ai {% if products|length < 5 %} peu de {% elif products|length < 10 %} quelques {% else %} beaucoup de {% endif %}
-produits préférés.</p>
-<p>Mes produits préférés sont :</p>
-
 <div class="list-products">
     {% for prdct in products %}
-        <div class="product-card">
-            <img src="{{ prdct.image.url }}" alt="{{ prdct.name }}" class="product-img">
-            <h2>{{ prdct.name }}</h2>
-            <p>Prix TTC entre : {{ prdct.min_price }} - {{ prdct.max_price }} €</p>
-            <a href="{% url 'detail_product' prdct.id %}" class="btn btn-primary">Voir le détail</a>
-        </div>
+    <div class="product-card">
+        <img src="{{ prdct.image.url }}" alt="{{ prdct.name }}" class="product-img">
+        <h2>{{ prdct.name }}</h2>
+        <p>Prix TTC entre : {{ prdct.min_price }} - {{ prdct.max_price }} €</p>
+        <a href="{% url 'detail_product' prdct.id %}" class="btn btn-primary">Voir le détail</a>
+    </div>
     {% endfor %}
 </div>
 
