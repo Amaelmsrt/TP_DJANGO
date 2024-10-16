@@ -16,7 +16,7 @@
                 <li>
                     <div class="fournisseur-content">
                         <a href="{% url 'detail_supplier' product_supplier.supplier.id %}">{{ product_supplier.supplier.name }} </a>
-                        - Prix : {{ product_supplier.price }} €
+                        - Prix : {{ product_supplier.price }} € - Quantité : {{ product_supplier.quantity }}
                         <form method="post" action="{% url 'add_to_cart' product_supplier.id %}">
                             {% csrf_token %}
                             <button type="submit" class="btn-panier"><img src="{% static 'icons/shopping_cart.svg' %}" alt="Panier"></button>
