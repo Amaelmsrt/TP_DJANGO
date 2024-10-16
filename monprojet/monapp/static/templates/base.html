@@ -25,6 +25,12 @@
                     <li><a href="{% url 'produits' %}">Produits</a></li>
                     <li><a href="{% url 'attributs' %}">Attributs</a></li>
                     <li><a href="{% url 'items' %}">Items</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'cart_detail' %}">
+                            Mon panier
+                            <img src="{% static 'icons/shopping_cart.svg' %}" alt="Panier" style="width: 1rem; margin-left: 0.5rem;">
+                        </a>
+                    </li>
                     {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Déconnexion</a>
@@ -37,12 +43,6 @@
                         <a class="nav-link" href="{% url 'register' %}">Inscription</a>
                     </li>
                     {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'cart_detail' %}">
-                            Mon panier
-                            <img src="{% static 'icons/shopping_cart.svg' %}" alt="Panier" style="width: 1rem; margin-left: 0.5rem;">
-                        </a>
-                    </li>
                 </ul>
             </nav>
         </div>
