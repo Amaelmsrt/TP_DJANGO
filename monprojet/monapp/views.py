@@ -295,6 +295,7 @@ class ProductAttributeValueDetailView(DetailView):
         context['titremenu'] = "Détail valeur d'attribut"
         return context
 
+@login_required
 def cart_detail(request):
     cart = Cart.objects.filter(user=request.user).first()
     if not cart:
@@ -304,6 +305,7 @@ def cart_detail(request):
         total_price += item.product_supplier.price * item.quantity
     return render(request, 'cart_detail.html', {'cart': cart, 'total_price': total_price})
 
+@login_required
 def add_to_cart(request, product_supplier_id):
     product_supplier = ProductSupplier.objects.get(id=product_supplier_id)
     cart = Cart.objects.filter(user=request.user).first()
@@ -312,6 +314,7 @@ def add_to_cart(request, product_supplier_id):
     cart.add_product(product_supplier)
     return redirect('cart_detail')
 
+@login_required
 def update_cart(request, product_supplier_id):
     quantity = request.POST.get('quantity', 1)
     quantity = int(quantity)
@@ -321,6 +324,7 @@ def update_cart(request, product_supplier_id):
     cart_item.save()
     return redirect('cart_detail')
 
+@login_required
 def remove_from_cart(request, product_supplier_id):
     product_supplier = ProductSupplier.objects.get(id=product_supplier_id)
     cart = Cart.objects.filter(user=request.user).first()
