@@ -43,6 +43,8 @@ urlpatterns = [
     path('update_cart/<int:product_supplier_id>/', views.update_cart, name='update_cart'),
     path('remove_from_cart/<int:product_supplier_id>/', views.remove_from_cart, name='remove_from_cart'),
     path("cart/", views.cart_detail, name="cart_detail"),
+    path("validate_order/", views.validate_order, name="validate_order"),
+    path("order_validation/", views.OrderValidationView.as_view(), name="order_validation"),
     
     path('admin-fournisseur/', views.SupplierListView.as_view(), name='suppliers'),
     path('admin-fournisseur/add/', views.SupplierCreateView.as_view(), name='new_supplier'),
@@ -50,6 +52,6 @@ urlpatterns = [
     path('admin-fournisseur/<pk>/delete/', views.SupplierDeleteView.as_view(), name='delete_supplier'),
     path('admin-order/', views.OrderListView.as_view(), name='orders'),
     path('admin-order/add/', views.OrderCreateView.as_view(), name='new_order'),
-    
+
     path('api/', include(router.urls)),
 ]

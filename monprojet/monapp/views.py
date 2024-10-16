@@ -60,6 +60,8 @@ class ProductListView(ListView):
             max_price = product_suppliers.aggregate(models.Max('price'))['price__max']
             product.min_price = min_price if min_price else 0
             product.max_price = max_price if max_price else 0
+            total_quantity = product_suppliers.aggregate(models.Sum('quantity'))['quantity__sum']
+            product.total_quantity = total_quantity if total_quantity else 0
         context['products'] = products
         return context
 
@@ -296,12 +298,13 @@ class ProductAttributeValueDetailView(DetailView):
 @login_required
 def cart_detail(request):
     cart = Cart.objects.filter(user=request.user).first()
+    cart_items = CartItem.objects.filter(cart=cart)
     if not cart:
         cart = Cart.objects.create(user=request.user)
     total_price = 0
-    for item in cart.items.all():
+    for item in cart_items:
         total_price += item.product_supplier.price * item.quantity
-    return render(request, 'cart_detail.html', {'cart': cart, 'total_price': total_price})
+    return render(request, 'cart_detail.html', {'cart': cart, 'total_price': total_price, 'cart_items': cart_items})
 
 @login_required
 def add_to_cart(request, product_supplier_id):
@@ -322,13 +325,35 @@ def update_cart(request, product_supplier_id):
     cart_item.save()
     return redirect('cart_detail')
 
+class OrderValidationView(TemplateView):
+    template_name = "order_validation.html"
+    def get_context_data(self, **kwargs):
+        context = super(OrderValidationView, self).get_context_data(**kwargs)
+        cart = Cart.objects.filter(user=self.request.user).first()
+        context['cart'] = cart
+        total_price = 0
+        for item in cart.items.all():
+            total_price += item.product_supplier.price * item.quantity
+        context['total_price'] = total_price
+        return context
+
 @login_required
 def remove_from_cart(request, product_supplier_id):
     product_supplier = ProductSupplier.objects.get(id=product_supplier_id)
     cart = Cart.objects.filter(user=request.user).first()
-    cart.remove_product(product_supplier)
-    return redirect('cart_detail')
+    cart.remove_product(product_supplier
+    return redirect('cart_detail.html')
 
+@login_required
+def validate_order(request):
+    cart = Cart.objects.filter(user=request.user).first()
+    for item in cart.items.all():
+        product_supplier = ProductSupplier.objects.get(id=item.product_supplier.id)
+        product_supplier.quantity -= item.quantity
+        product_supplier.save()
+    cart.clear_cart()
+    return redirect('order_validation.html')
+                        
 # Admin views
 
 class SupplierListView(TemplateView):
@@ -346,14 +371,14 @@ class SupplierUpdateView(UpdateView):
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         supplier = form.save()
-        return redirect('fournisseur')
+        return redirect('suppliers')
 
 # delete supplier
 
 class SupplierDeleteView(DeleteView):
     model = Supplier
     template_name = "admin/delete_fournisseur.html"
-    success_url = reverse_lazy('fournisseur')
+    success_url = reverse_lazy('suppliers')
 
 # add supplier
 

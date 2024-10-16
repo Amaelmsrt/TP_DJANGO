@@ -222,6 +222,9 @@ class Cart(models.Model):
     def remove_product(self, product_supplier):
         CartItem.objects.filter(cart=self, product_supplier=product_supplier).delete()
 
+    def clear_cart(self):
+        CartItem.objects.filter(cart=self).delete()
+
 class CartItem(models.Model):
     """
     Modèle représentant un article dans le panier.

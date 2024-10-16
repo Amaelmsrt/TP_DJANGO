@@ -5,23 +5,30 @@
 {% block content %}
 <h2>Mon Panier</h2>
 <ul>
-    {% for item in cart.items.all %}
-    <li>
-        <p> Fournisseur : {{ item.product_supplier.supplier.name }}</p>
-        <form method="post" action="{% url 'update_cart' item.product_supplier.id %}">
-            {% csrf_token %}
-            <img src="{{ item.product_supplier.product.image.url }}" alt="{{ item.product_supplier.product.name }}" style="width: 50px; height: 50px;">
-            {{ item.product_supplier.product.name }} - {{ item.total_price }} €
-            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="10">
-            <button type="submit" class="btn btn-primary">Modifier</button>
-        </form>
-        <form method="post" action="{% url 'remove_from_cart' item.product_supplier.id %}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Supprimer</button>
-        </form>
-    </li>
-    {% endfor %}
+    {% if cart_items|length == 0 %}
+        <li>Votre panier est vide</li>
+    {% else %}
+        {% for item in cart_items %}
+        <li>
+            <p> Fournisseur : {{ item.product_supplier.supplier.name }}</p>
+            <form method="post" action="{% url 'update_cart' item.product_supplier.id %}">
+                {% csrf_token %}
+                <img src="{{ item.product_supplier.product.image.url }}" alt="{{ item.product_supplier.product.name }}" style="width: 50px; height: 50px;">
+                {{ item.product_supplier.product.name }} - {{ item.total_price }} €
+                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product_supplier.quantity }}">
+                <button type="submit" class="btn btn-primary">Modifier</button>
+            </form>
+            <form method="post" action="{% url 'remove_from_cart' item.product_supplier.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Supprimer</button>
+            </form>
+        </li>
+        {% endfor %}
+    {% endif %}
 </ul>
 <p>Total : {{ total_price }} €</p>
-<a href="" class="btn btn-primary">Passer à la caisse</a>
+<form method="post" action="{% url 'validate_order' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">Passer à la caisse</button>
+</form>
 {% endblock %}

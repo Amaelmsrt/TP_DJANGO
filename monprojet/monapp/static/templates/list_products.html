@@ -17,12 +17,22 @@
 
 <div class="list-products">
     {% for prdct in products %}
-    <div class="product-card">
-        <img src="{{ prdct.image.url }}" alt="{{ prdct.name }}" class="product-img">
-        <h2>{{ prdct.name }}</h2>
-        <p>Prix TTC entre : {{ prdct.min_price }} - {{ prdct.max_price }} €</p>
-        <a href="{% url 'detail_product' prdct.id %}" class="btn btn-primary">Voir le détail</a>
-    </div>
+        <div class="product-card">
+            <img src="{{ prdct.image.url }}" alt="{{ prdct.name }}" class="product-img">
+            <h2>{{ prdct.name }}</h2>
+            {% if prdct.min_price != 0 %}
+                <p>Prix TTC entre : {{ prdct.min_price }} - {{ prdct.max_price }} €</p>
+            {% else %}
+                <p style="color: transparent;">Pas de prix</p>
+            {% endif %}
+            {% if prdct.total_quantity %}
+                <p style="color: green;">En stock</p>
+            {% else %}
+                <p style="color: red;">En rupture de stock</p>
+            {% endif %}
+            <p></p>
+            <a href="{% url 'detail_product' prdct.id %}" class="btn btn-primary">Voir le détail</a>
+        </div>
     {% endfor %}
 </div>
 
