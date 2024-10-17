@@ -80,6 +80,7 @@ class Order(models.Model):
     date_creation = models.DateTimeField(blank=True, verbose_name="Date création", default=timezone.now)
     product = models.ForeignKey('Product', on_delete=models.CASCADE, default=1)
     quantity = models.PositiveIntegerField(default=1)
+    mis_en_stock = models.BooleanField(default=False)
 
     def __str__(self):
         """
@@ -144,7 +145,8 @@ class Supplier(models.Model):
     class Meta:
         verbose_name = "Supplier"
     
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
+    password = models.CharField(max_length=100, default="password")
     address = models.TextField(null=True, blank=True)
     phone = models.CharField(max_length=20, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)

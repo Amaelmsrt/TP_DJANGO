@@ -22,12 +22,14 @@
                         {% else %}
                             <span style="color: green;"> Quantité :  {{ product_supplier.quantity }}</span>
                         {% endif %}
-                        <form method="post" action="{% url 'add_to_cart' product_supplier.id %}">
-                            {% csrf_token %}
-                            {% if product_supplier.quantity > 0 %}
-                                <button type="submit" class="btn-panier"><img src="{% static 'icons/shopping_cart.svg' %}" alt="Panier"></button>
-                            {% endif %}
-                        </form>
+                        {% if not user.is_superuser %}
+                            <form method="post" action="{% url 'add_to_cart' product_supplier.id %}">
+                                {% csrf_token %}
+                                {% if product_supplier.quantity > 0 %}
+                                    <button type="submit" class="btn-panier"><img src="{% static 'icons/shopping_cart.svg' %}" alt="Panier"></button>
+                                {% endif %}
+                            </form>
+                        {% endif %}
                     </div>
                 </li>
             {% endfor %}
