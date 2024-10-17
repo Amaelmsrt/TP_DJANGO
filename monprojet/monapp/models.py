@@ -9,46 +9,6 @@ PRODUCT_STATUS = (
     (2, 'Out of stock')              
 )
 
-class User(AbstractUser):
-    ADMIN = 'admin'
-    FOURNISSEUR = 'fournisseur'
-    UTILISATEUR = 'utilisateur'
-
-    ROLE_CHOICES = [
-        (ADMIN, 'Admin'),
-        (FOURNISSEUR, 'Fournisseur'),
-        (UTILISATEUR, 'Utilisateur'),
-    ]
-
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default=UTILISATEUR)
-
-    groups = models.ManyToManyField(
-        'auth.Group',
-        related_name='custom_user_set',  # Ajout d'un related_name unique
-        blank=True,
-        help_text='The groups this user belongs to.',
-        verbose_name='groups'
-    )
-    user_permissions = models.ManyToManyField(
-        'auth.Permission',
-        related_name='custom_user_permissions_set',  # Ajout d'un related_name unique
-        blank=True,
-        help_text='Specific permissions for this user.',
-        verbose_name='user permissions'
-    )
-
-    def is_admin(self):
-        return self.role == self.ADMIN
-    
-    def is_fournisseur(self):
-        return self.role == self.FOURNISSEUR
-    
-    def is_utilisateur(self):
-        return self.role == self.UTILISATEUR
-
-    def __str__(self):
-        return self.username
-
 class Status(models.Model):
     """
     Modèle représentant le statut d'un produit.

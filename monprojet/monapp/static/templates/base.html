@@ -22,18 +22,17 @@
                     <li><a href="{% url 'home' %}">Accueil</a></li>
                     <li><a href="{% url 'about' %}">À propos</a></li>
                     <li><a href="{% url 'contact' %}">Contact</a></li>
+
+                    {% if user.is_authenticated and user.is_superuser %}
+                    <li><a href="{% url 'suppliers' %}">Fournisseurs</a></li>
                     <li><a href="{% url 'orders' %}">Commandes</a></li>
-
-                    {% if user.is_admin %}
-
                     <li><a href="{% url 'attributs' %}">Attributs</a></li>
                     <li><a href="{% url 'items' %}">Items</a></li>
                     {% endif %}
 
-                    <li><a href="{% url 'suppliers' %}">Fournisseurs</a></li>
 
                     <li><a href="{% url 'produits' %}">Produits</a></li>
-                    {% if user.is_utilisateur %}
+                    {% if user.is_authenticated and not user.is_superuser %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'cart_detail' %}">
                             Mon panier

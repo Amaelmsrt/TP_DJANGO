@@ -110,11 +110,15 @@ class SupplierDetailView(DetailView):
         return context
 
 class ConnectView(LoginView):
+    print("ConnectView")
     template_name = 'login.html'
     def post(self, request, **kwargs):
         username = request.POST.get('username', False)
         password = request.POST.get('password', False)
+        print(username, password)
         user = authenticate(request, username=username, password=password)
+        print(user)
+        print(user.is_active)
         if user is not None and user.is_active:
             login(request, user)
             return render(request, 'home.html')
