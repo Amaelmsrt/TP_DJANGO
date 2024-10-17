@@ -4,17 +4,15 @@
 {% block content %}
 <h1>Liste des commandes</h1>
 
-<a href="{% url 'new_order' %}" class="btn btn-primary">Créer une Nouvelle Commande</a>
-
 <h2>Commandes en Préparation</h2>
 <table class="table" id="preparationTable">
     <thead>
         <tr>
             <th>Produit</th>
-            <th>Fournisseur</th>
             <th>Quantité</th>
             <th>Date</th>
             <th>Statut</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -23,10 +21,16 @@
         {% if order.status == 0 %}
         <tr>
             <td>{{ order.product }}</td>
-            <td>{{ order.supplier }}</td>
             <td>{{ order.quantity }}</td>
             <td>{{ order.date_creation }}</td>
             <td>En préparation</td>
+            <td>
+                <form method="post" action="{% url 'change_status_order' order.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="expédié">
+                    <button type="submit" class="btn btn-primary mt-2">Marqué comme expédié</button>
+                </form>
+            </td>
         </tr>
         {% endif %}
         {% endfor %}
@@ -38,10 +42,10 @@
     <thead>
         <tr>
             <th>Produit</th>
-            <th>Fournisseur</th>
             <th>Quantité</th>
             <th>Date</th>
             <th>Statut</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -49,10 +53,16 @@
         {% if order.status == 1 %}
         <tr>
             <td>{{ order.product }}</td>
-            <td>{{ order.supplier }}</td>
             <td>{{ order.quantity }}</td>
             <td>{{ order.date_creation }}</td>
             <td>En cours</td>
+            <td>
+                <form method="post" action="{% url 'change_status_order' order.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="terminé">
+                    <button type="submit" class="btn btn-primary mt-2">Marqué comme livré</button>
+                </form>
+            </td>
         </tr>
         {% endif %}
         {% endfor %}
@@ -64,11 +74,9 @@
     <thead>
         <tr>
             <th>Produit</th>
-            <th>Fournisseur</th>
             <th>Quantité</th>
             <th>Date</th>
             <th>Statut</th>
-            <th>Mis en stock</th>
         </tr>
     </thead>
     <tbody>
@@ -76,21 +84,9 @@
         {% if order.status == 2 %}
         <tr>
             <td>{{ order.product }}</td>
-            <td>{{ order.supplier }}</td>
             <td>{{ order.quantity }}</td>
             <td>{{ order.date_creation }}</td>
             <td>Terminée</td>
-            <td>
-                {% if order.mis_en_stock %}
-                Oui
-                {% else %}
-                <form method="post" action="{% url 'change_status_order' order.id %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="status" value="terminé">
-                    <button type="submit" class="btn btn-primary mt-2">Marqué comme mis en stock</button>
-                </form>
-                {% endif %}
-            </td>
         </tr>
         {% endif %}
         {% endfor %}
