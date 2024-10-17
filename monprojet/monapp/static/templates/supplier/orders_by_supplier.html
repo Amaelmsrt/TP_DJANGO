@@ -28,7 +28,7 @@
                 <form method="post" action="{% url 'change_status_order' order.id %}">
                     {% csrf_token %}
                     <input type="hidden" name="status" value="expédié">
-                    <button type="submit" class="btn btn-primary mt-2">Marqué comme expédié</button>
+                    <button type="submit" class="btn btn-primary mt-2">Marquer comme expédié</button>
                 </form>
             </td>
         </tr>
@@ -60,7 +60,7 @@
                 <form method="post" action="{% url 'change_status_order' order.id %}">
                     {% csrf_token %}
                     <input type="hidden" name="status" value="terminé">
-                    <button type="submit" class="btn btn-primary mt-2">Marqué comme livré</button>
+                    <button type="submit" class="btn btn-primary mt-2">Marquer comme livré</button>
                 </form>
             </td>
         </tr>
