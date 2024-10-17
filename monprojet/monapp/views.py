@@ -5,7 +5,7 @@ from django.core.mail import send_mail
 from django.urls import reverse_lazy
 
 from monapp.forms import ContactUsForm, ProductAttributeForm, ProductForm, ProductItemForm, ProductAttributeValueForm
-from .models import Product, ProductAttribute, ProductAttributeValue, ProductItem, Supplier, ProductSupplier, Cart, CartItem, Order
+from .models import Product, ProductAttribute, ProductAttributeValue, ProductItem, Supplier, ProductSupplier, Cart, CartItem, Order, ValidatedCart, ValidatedCartItem
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import LoginView
@@ -13,6 +13,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.utils import timezone
 
 def ListProducts(request):
     prdcts = Product.objects.all()
@@ -70,6 +71,7 @@ class ProductAttributeListView(ListView):
     context_object_name = "productattributes"
     def get_queryset(self):
         return ProductAttribute.objects.all().prefetch_related('productattributevalue_set')
+
     def get_context_data(self, **kwargs):
         context = super(ProductAttributeListView, self).get_context_data(**kwargs) 
         context['titremenu'] = "Liste des attributs"
@@ -316,10 +318,9 @@ def cart_detail(request):
     cart_items = CartItem.objects.filter(cart=cart)
     if not cart:
         cart = Cart.objects.create(user=request.user)
-    total_price = 0
     for item in cart_items:
-        total_price += item.product_supplier.price * item.quantity
-    return render(request, 'cart_detail.html', {'cart': cart, 'total_price': total_price, 'cart_items': cart_items})
+        cart.total_price += item.product_supplier.price * item.quantity
+    return render(request, 'cart_detail.html', {'cart': cart, 'total_price': cart.total_price, 'cart_items': cart_items})
 
 @login_required
 def add_to_cart(request, product_supplier_id):
@@ -355,10 +356,9 @@ class OrderValidationView(TemplateView):
         context = super(OrderValidationView, self).get_context_data(**kwargs)
         cart = Cart.objects.filter(user=self.request.user).first()
         context['cart'] = cart
-        total_price = 0
         for item in cart.items.all():
-            total_price += item.product_supplier.price * item.quantity
-        context['total_price'] = total_price
+            cart.total_price += item.product_supplier.price * item.quantity
+        context['total_price'] = cart.total_price
         return context
 
 @login_required
@@ -372,12 +372,34 @@ def remove_from_cart(request, product_supplier_id):
 def validate_order(request):
     cart = Cart.objects.filter(user=request.user).first()
     if cart:
+        validated_cart = ValidatedCart.objects.create(
+            user=request.user, 
+            date_of_purchase=timezone.now(), 
+            total_price=cart.total_price)
         for item in cart.items.all():
             product_supplier = ProductSupplier.objects.get(id=item.product_supplier.id)
             product_supplier.quantity -= item.quantity
             product_supplier.save()
+            validated_cart_item = ValidatedCartItem.objects.create(
+                validated_cart=validated_cart,
+                cart_item=item
+            )
+            validated_cart_item.save()
         cart.clear_cart()
     return redirect('order_validation')
+
+class HistoryCartsView(ListView):
+    model = ValidatedCart
+    template_name = "history_carts.html"
+    context_object_name = "carts"
+    
+    def get_queryset(self):
+        return ValidatedCart.objects.filter(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super(HistoryCartsView, self).get_context_data(**kwargs)
+        context['titremenu'] = "Historique des achats"
+        return context
 
 # Admin views
 
@@ -446,9 +468,7 @@ class SupplierOrderListView(TemplateView):
         return render(request, self.template_name, {'orders': order})
 
 class ChangeStatusOrder(TemplateView):
-    def post(self, request, **kwargs):
-
-        
+    def post(self, request, **kwargs):        
         order_id = kwargs.get('order_id')
         order = Order.objects.get(id=order_id)
         print(order.status)

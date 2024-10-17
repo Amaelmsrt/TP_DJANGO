@@ -162,7 +162,7 @@ class Cart(models.Model):
     Modèle représentant un panier d'utilisateur.
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
         return f"Panier de {self.user.username}"
@@ -191,7 +191,7 @@ class CartItem(models.Model):
     """
     Modèle représentant un article dans le panier.
     """
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items', null=True, blank=True)
     product_supplier = models.ForeignKey(ProductSupplier, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
@@ -201,3 +201,31 @@ class CartItem(models.Model):
     @property
     def total_price(self):
         return self.quantity * self.product_supplier.price
+
+class ValidatedCart(models.Model):
+    """
+    Modèle représentant un panier validé.
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='validated_carts')
+    date_of_purchase = models.DateTimeField(default=timezone.now)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    def __str__(self):
+        """
+        Retourne une représentation en chaîne de caractères du panier validé.
+        """
+        return f"Panier validé de {self.user.username} - {self.date_of_purchase}"
+
+class ValidatedCartItem(models.Model):
+    """
+    Modèle représentant un article dans un panier validé.
+    """
+    validated_cart = models.ForeignKey(ValidatedCart, on_delete=models.CASCADE, related_name='items')
+    cart_item = models.ForeignKey(CartItem, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.cart_item.quantity} x {self.cart_item.product_supplier.product.name}"
+
+    @property
+    def total_price(self):
+        return self.cart_item.quantity * self.cart_item.product_supplier.price
