@@ -57,9 +57,7 @@ class ProductListView(ListView):
         for product in products:
             product_suppliers = ProductSupplier.objects.filter(product=product)
             min_price = product_suppliers.aggregate(models.Min('price'))['price__min']
-            max_price = product_suppliers.aggregate(models.Max('price'))['price__max']
             product.min_price = min_price if min_price else 0
-            product.max_price = max_price if max_price else 0
             total_quantity = product_suppliers.aggregate(models.Sum('quantity'))['quantity__sum']
             product.total_quantity = total_quantity if total_quantity else 0
         context['products'] = products
