@@ -12,6 +12,7 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth.models import User
 from django.db import models
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 def ListProducts(request):
     prdcts = Product.objects.all()
@@ -314,8 +315,17 @@ def add_to_cart(request, product_supplier_id):
     cart = Cart.objects.filter(user=request.user).first()
     if not cart:
         cart = Cart.objects.create(user=request.user)
-    cart.add_product(product_supplier)
-    return redirect('cart_detail')
+    product_cart = CartItem.objects.filter(cart=cart, product_supplier=product_supplier).first()
+    if product_cart:
+        if product_supplier.quantity > product_cart.quantity:
+            cart.add_product(product_supplier)
+            return redirect('cart_detail')
+        else:
+            messages.error(request, f"La quantité demandée pour {product_supplier.product.name} dépasse le stock disponible.", extra_tags=str(product_supplier.id))
+            return redirect('detail_product', product_supplier.product.id)
+    else:
+        cart.add_product(product_supplier)
+        return redirect('cart_detail')
 
 @login_required
 def update_cart(request, product_supplier_id):
@@ -344,18 +354,19 @@ def remove_from_cart(request, product_supplier_id):
     product_supplier = ProductSupplier.objects.get(id=product_supplier_id)
     cart = Cart.objects.filter(user=request.user).first()
     cart.remove_product(product_supplier)
-    return redirect('cart_detail.html')
+    return redirect('cart_detail')
 
 @login_required
 def validate_order(request):
     cart = Cart.objects.filter(user=request.user).first()
-    for item in cart.items.all():
-        product_supplier = ProductSupplier.objects.get(id=item.product_supplier.id)
-        product_supplier.quantity -= item.quantity
-        product_supplier.save()
-    cart.clear_cart()
-    return redirect('order_validation.html')
-                        
+    if cart:
+        for item in cart.items.all():
+            product_supplier = ProductSupplier.objects.get(id=item.product_supplier.id)
+            product_supplier.quantity -= item.quantity
+            product_supplier.save()
+        cart.clear_cart()
+    return redirect('order_validation')
+
 # Admin views
 
 class SupplierListView(TemplateView):
