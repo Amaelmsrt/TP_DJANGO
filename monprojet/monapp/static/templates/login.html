@@ -8,15 +8,24 @@
         <div class="card shadow-sm">
             <div class="card-body">
                 <h3 class="card-title text-center mb-4">Se connecter</h3>
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                        {% endfor %}
+                </ul>
+                {% endif %}
                 <form method="POST" action="{% url 'login' %}" autocomplete="off">
                     {% csrf_token %}
                     <div class="form-group mb-3">
                         <label for="username">Identifiant</label>
-                        <input class="form-control" type="text" id="username" name="username" placeholder="Utilisateur" required>
+                        <input class="form-control" type="text" id="username" name="username" placeholder="Utilisateur"
+                            required>
                     </div>
                     <div class="form-group mb-3">
                         <label for="password">Mot de Passe</label>
-                        <input class="form-control" type="password" id="password" name="password" placeholder="Mot de passe" required>
+                        <input class="form-control" type="password" id="password" name="password"
+                            placeholder="Mot de passe" required>
                     </div>
                     <button type="submit" class="btn btn-success btn-block mt-2">Se connecter</button>
                 </form>

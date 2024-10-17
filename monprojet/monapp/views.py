@@ -12,6 +12,7 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth.models import User
 from django.db import models
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 def ListProducts(request):
     prdcts = Product.objects.all()
@@ -110,20 +111,25 @@ class SupplierDetailView(DetailView):
         return context
 
 class ConnectView(LoginView):
-    print("ConnectView")
     template_name = 'login.html'
     def post(self, request, **kwargs):
         username = request.POST.get('username', False)
         password = request.POST.get('password', False)
-        print(username, password)
         user = authenticate(request, username=username, password=password)
-        print(user)
-        print(user.is_active)
         if user is not None and user.is_active:
             login(request, user)
             return render(request, 'home.html')
         else:
-            return render(request, 'register.html')
+            # On regarde si l'utilisateur n'est pas un fournisseur
+            supplier = Supplier.objects.filter(name=username, password=password).first()
+            if supplier:
+                # mettre supplier dans la session
+                request.session['supplier'] = supplier.id
+                return redirect('detail_supplier', supplier.id)
+            # clear les messages d'erreur
+            messages.error(request, None)
+            messages.error(request, "Nom d'utilisateur ou mot de passe incorrect")
+            return render(request, 'login.html')
 
 class RegisterView(TemplateView): 
     template_name = 'register.html'
@@ -141,6 +147,9 @@ class RegisterView(TemplateView):
 class DisconnectView(TemplateView): 
     template_name = 'logout.html'
     def get(self, request, **kwargs): 
+        # On regarde si l'utilisateur n'est pas un fournisseur
+        if 'supplier' in request.session:
+            del request.session['supplier']
         logout(request)
         return render(request, self.template_name)
 
@@ -411,3 +420,42 @@ class OrderCreateView(CreateView):
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         order = form.save()
         return redirect('orders')
+
+# Views Supplier
+
+class SupplierOrderListView(TemplateView):
+    template_name = 'supplier/orders_by_supplier.html'
+    # Regarde dans la session si le fournisseur est connecté
+    def get(self, request, **kwargs):
+        supplier_id = request.session.get('supplier')
+        if not supplier_id:
+            return redirect('login')
+        order = Order.objects.filter(supplier_id=supplier_id)
+        return render(request, self.template_name, {'orders': order})
+
+class ChangeStatusOrder(TemplateView):
+    def post(self, request, **kwargs):
+
+        
+        order_id = kwargs.get('order_id')
+        order = Order.objects.get(id=order_id)
+        print(order.status)
+        if order.status == 0:
+            order.status = 1
+        elif order.status == 1:
+            order.status = 2
+        elif order.status == 2 and not order.mis_en_stock:
+            print(order.mis_en_stock)
+            order.mis_en_stock = True
+            order.save()
+            # Ajouté la quantité commandée au stock du fournisseur
+            try:
+                product_supplier = ProductSupplier.objects.get(product=order.product, supplier=order.supplier)
+                product_supplier.quantity += order.quantity
+                product_supplier.save()
+            except ProductSupplier.DoesNotExist:
+                ProductSupplier.objects.create(product=order.product, supplier=order.supplier, quantity=order.quantity, price = order.price)
+            return redirect('orders')
+        
+        order.save()
+        return redirect('supplier_orders')
