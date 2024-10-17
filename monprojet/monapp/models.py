@@ -79,7 +79,7 @@ class Order(models.Model):
     status = models.SmallIntegerField(choices=STATUS, default=0)
     date_creation = models.DateTimeField(blank=True, verbose_name="Date création", default=timezone.now)
     product = models.ForeignKey('Product', on_delete=models.CASCADE, default=1)
-    quantity = models.PositiveIntegerField(default=1)  # Ajout d'une valeur par défaut
+    quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
         """
