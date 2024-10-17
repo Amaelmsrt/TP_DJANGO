@@ -43,9 +43,8 @@ urlpatterns = [
     path('update_cart/<int:product_supplier_id>/', views.update_cart, name='update_cart'),
     path('remove_from_cart/<int:product_supplier_id>/', views.remove_from_cart, name='remove_from_cart'),
     path("cart/", views.cart_detail, name="cart_detail"),
+    path("order/validate/", views.OrderValidationView.as_view(), name="order_validation"),
     path("validate_order/", views.validate_order, name="validate_order"),
-    path("order_validation/", views.OrderValidationView.as_view(), name="order_validation"),
-    
     path('admin-fournisseur/', views.SupplierListView.as_view(), name='suppliers'),
     path('admin-fournisseur/add/', views.SupplierCreateView.as_view(), name='new_supplier'),
     path('admin-fournisseur/<pk>/update/', views.SupplierUpdateView.as_view(), name='update_supplier'),

@@ -20,14 +20,11 @@
         <div class="product-card">
             <img src="{{ prdct.image.url }}" alt="{{ prdct.name }}" class="product-img">
             <h2>{{ prdct.name }}</h2>
-            {% if prdct.min_price != 0 %}
-                <p>Prix TTC entre : {{ prdct.min_price }} - {{ prdct.max_price }} €</p>
-            {% else %}
-                <p style="color: transparent;">Pas de prix</p>
-            {% endif %}
             {% if prdct.total_quantity %}
+                <p>À partir de {{ prdct.min_price }} €</p>
                 <p style="color: green;">En stock</p>
             {% else %}
+                <p style="color: transparent;">Pas de prix</p>
                 <p style="color: red;">En rupture de stock</p>
             {% endif %}
             <p></p>

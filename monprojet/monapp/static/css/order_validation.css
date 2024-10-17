@@ -1,0 +1,27 @@
+.compteur {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 20px;
+}
+
+@keyframes compte {
+    0% {
+        content: "Validation des achats : 3";
+    }
+    33% {
+        content: "Validation des achats : 2";
+    }
+    66% {
+        content: "Validation des achats : 1";
+    }
+    100% {
+        content: "Les achats ont bien été validés !";
+    }
+}
+
+.compteur::before {
+    display: inline-block;
+    animation: compte 3s steps(3) forwards;
+    content: "Validation des achats : 3";
+}
