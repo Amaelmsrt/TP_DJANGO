@@ -11,18 +11,18 @@
     <li>Téléphone : {{ supplier.phone }}</li>
     <li>Email : {{ supplier.email }}</li>
 </ul>
-Vend les produits suivants :
-
+<p>Ce fournisseur propose les produits suivants : </p>
 <div class="carrousel">
     <div class="product-card" 
         data-products='{% for product in products %}
                             {"name": "{{ product.name }}", 
-                            "image_url": "{{ product.image.url }}"}
+                            "image_url": "{{ product.image.url }}",
+                            "price": "{{ product.price }}"}
                             {% if not forloop.last %},{% endif %}
                         {% endfor %}'>
-
         <img id="image-produit" src="{{ products.0.image.url }}" alt="{{ products.0.name }}" class="image-produit" style="width: 10rem; height: 10rem;">
         <h2 id="product-title" class="product-title">{{ products.0.name }}</h2>
+        <p id="product-price">Prix : {{ products.0.price }}</p>
     </div>
     <div class="boutons">
         <button class="defilement" id="btn-precedent">Précédent</button>
@@ -39,6 +39,7 @@ Vend les produits suivants :
     const btnSuivant = document.querySelector('#btn-suivant');
     const imageProduit = document.querySelector('#image-produit');
     const productTitle = document.querySelector('#product-title');
+    const productPrice = document.querySelector('#product-price');
     const productCard = document.querySelector('.product-card');
     const productsData = productCard.getAttribute('data-products');
     const products = JSON.parse(`[${productsData}]`);
@@ -49,6 +50,7 @@ Vend les produits suivants :
         imageProduit.src = products[index].image_url;
         imageProduit.alt = products[index].name;
         productTitle.textContent = products[index].name;
+        productPrice.textContent = `Prix : ${products[index].price}`;
         changerBoutons();
     }
 

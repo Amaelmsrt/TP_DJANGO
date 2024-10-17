@@ -105,7 +105,11 @@ class SupplierDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(SupplierDetailView, self).get_context_data(**kwargs)
         context['titremenu'] = "Détail fournisseur"
-        context['products'] = self.object.products.all()
+        products = self.object.products.all()
+        context['products'] = products
+        for product in products:
+            product_supplier = ProductSupplier.objects.filter(product=product, supplier=self.object).first()
+            product.price = product_supplier.price
         return context
 
 class ConnectView(LoginView):
