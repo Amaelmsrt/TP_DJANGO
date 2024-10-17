@@ -397,7 +397,7 @@ class SupplierDeleteView(DeleteView):
 
 class SupplierCreateView(CreateView):
     model = Supplier
-    fields = ['name', 'address', 'phone', 'email']
+    fields = ['name', 'address', 'phone', 'email', 'password']
     template_name = "admin/new_fournisseur.html"
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
