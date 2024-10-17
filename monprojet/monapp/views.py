@@ -341,7 +341,7 @@ class OrderValidationView(TemplateView):
 def remove_from_cart(request, product_supplier_id):
     product_supplier = ProductSupplier.objects.get(id=product_supplier_id)
     cart = Cart.objects.filter(user=request.user).first()
-    cart.remove_product(product_supplier
+    cart.remove_product(product_supplier)
     return redirect('cart_detail.html')
 
 @login_required
