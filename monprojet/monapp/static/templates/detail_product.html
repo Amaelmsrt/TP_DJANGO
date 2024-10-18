@@ -20,7 +20,7 @@
                         {% if product_supplier.quantity == 0 %}
                             <span style="color: red;">Rupture de stock</span>
                         {% else %}
-                            <span style="color: green;"> Quantité :  {{ product_supplier.quantity }}</span>
+                            <span style="color: green;"> Quantité : {{ product_supplier.quantity }}</span>
                         {% endif %}
                         {% if not user.is_superuser %}
                             <form method="post" action="{% url 'add_to_cart' product_supplier.id %}">

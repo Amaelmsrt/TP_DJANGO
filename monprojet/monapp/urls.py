@@ -51,10 +51,9 @@ urlpatterns = [
     path('admin-fournisseur/<pk>/delete/', views.SupplierDeleteView.as_view(), name='delete_supplier'),
     path('admin-order/', views.OrderListView.as_view(), name='orders'),
     path('admin-order/add/', views.OrderCreateView.as_view(), name='new_order'),
-
     path('supplier-order/', views.SupplierOrderListView.as_view(), name='supplier_orders'),
     path('orders/change_status/<int:order_id>/', views.ChangeStatusOrder.as_view(), name='change_status_order'),
-
+    path('carts/history/', views.HistoryCartsView.as_view(), name='history_carts'),
 
     path('api/', include(router.urls)),
 ]

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="paniers">
+    {% for validated_cart in validated_carts %}
+        <div class="panier">
+            <h2>Le {{ validated_cart.date_of_purchase }}</h2>
+            <p> Montant total : {{ validated_cart.total_price }} €</p>
+            <ul class="produits">
+                {% for item in validated_cart.items.all %}
+                <li>
+                    <div class="produit">
+                        <img src="{{ item.product_supplier.product.image.url }}" alt="{{ item.product_supplier.product.name }}" style="width: 50px; height: 50px;">
+                        <span>{{ item.product_supplier.product.name }}</span> - {{ item.total_price }} €
+                        <p><span>Quantité</span> : {{ item.quantity }}</p>
+                        <p><span>Fournisseur</span> : {{ item.product_supplier.supplier.name }}</p>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
