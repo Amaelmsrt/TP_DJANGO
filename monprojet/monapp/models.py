@@ -221,7 +221,8 @@ class ValidatedCartItem(models.Model):
     Modèle représentant un article dans un panier validé.
     """
     validated_cart = models.ForeignKey(ValidatedCart, on_delete=models.CASCADE, related_name='items')
-    cart_item = models.ForeignKey(CartItem, on_delete=models.CASCADE)
+    product_supplier = models.ForeignKey(ProductSupplier, on_delete=models.CASCADE, null=True, blank=True)
+    quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
         return f"{self.cart_item.quantity} x {self.cart_item.product_supplier.product.name}"
