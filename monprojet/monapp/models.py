@@ -229,4 +229,4 @@ class ValidatedCartItem(models.Model):
 
     @property
     def total_price(self):
-        return self.cart_item.quantity * self.cart_item.product_supplier.price
+        return self.quantity * self.product_supplier.price

@@ -382,7 +382,8 @@ def validate_order(request):
             product_supplier.save()
             validated_cart_item = ValidatedCartItem.objects.create(
                 validated_cart=validated_cart,
-                cart_item=item
+                product_supplier = item.product_supplier,
+                quantity = item.quantity
             )
             validated_cart_item.save()
         cart.clear_cart()
