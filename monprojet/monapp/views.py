@@ -392,7 +392,7 @@ def validate_order(request):
 class HistoryCartsView(ListView):
     model = ValidatedCart
     template_name = "history_carts.html"
-    context_object_name = "carts"
+    context_object_name = "validated_carts"
     
     def get_queryset(self):
         return ValidatedCart.objects.filter(user=self.request.user)

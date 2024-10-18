@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="paniers">
+    {% for validated_cart in validated_carts %}
+        <div class="panier">
+            <h2>Le {{ validated_cart.date_of_purchase }}</h2>
+            <p> Montant total : {{ validated_cart.total_price }}</p>
+            <ul>
+                <li></li>
+            </ul>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

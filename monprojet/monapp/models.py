@@ -174,18 +174,24 @@ class Cart(models.Model):
             cart_item.save()
         else:
             CartItem.objects.create(cart=self, product_supplier=product_supplier, quantity=quantity)
+        self.update_total_price()
 
     def update_quantity(self, product_supplier, quantity):
         cart_item = CartItem.objects.filter(cart=self, product_supplier=product_supplier).first()
         if cart_item:
             cart_item.quantity = quantity
             cart_item.save()
+            self.update_total_price()
 
     def remove_product(self, product_supplier):
         CartItem.objects.filter(cart=self, product_supplier=product_supplier).delete()
 
     def clear_cart(self):
         CartItem.objects.filter(cart=self).delete()
+
+    def update_total_price(self):
+        self.total_price = sum(item.total_price for item in self.items.all())
+        self.save()
 
 class CartItem(models.Model):
     """
