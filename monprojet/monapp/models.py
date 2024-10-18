@@ -158,9 +158,6 @@ class Supplier(models.Model):
         return self.name
 
 class Cart(models.Model):
-    """
-    Modèle représentant un panier d'utilisateur.
-    """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
@@ -173,25 +170,41 @@ class Cart(models.Model):
             cart_item.quantity += quantity
             cart_item.save()
         else:
-            CartItem.objects.create(cart=self, product_supplier=product_supplier, quantity=quantity)
-        self.update_total_price()
+            cart_item = CartItem.objects.create(cart=self, product_supplier=product_supplier, quantity=quantity)
+        self.total_price += product_supplier.price * quantity
+        self.save()
 
     def update_quantity(self, product_supplier, quantity):
         cart_item = CartItem.objects.filter(cart=self, product_supplier=product_supplier).first()
         if cart_item:
+            self.total_price -= cart_item.total_price
             cart_item.quantity = quantity
             cart_item.save()
-            self.update_total_price()
+            self.total_price += cart_item.total_price
+            self.save()
 
     def remove_product(self, product_supplier):
-        CartItem.objects.filter(cart=self, product_supplier=product_supplier).delete()
+        cart_item = CartItem.objects.filter(cart=self, product_supplier=product_supplier).first()
+        self.total_price -= cart_item.total_price
+        cart_item.delete()
+        self.save()
 
     def clear_cart(self):
+        self.total_price = 0
         CartItem.objects.filter(cart=self).delete()
-
-    def update_total_price(self):
-        self.total_price = sum(item.total_price for item in self.items.all())
         self.save()
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items', null=True, blank=True)
+    product_supplier = models.ForeignKey(ProductSupplier, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.quantity} x {self.product_supplier.product.name}"
+
+    @property
+    def total_price(self):
+        return self.quantity * self.product_supplier.price
 
 class CartItem(models.Model):
     """

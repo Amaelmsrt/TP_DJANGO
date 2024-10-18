@@ -318,8 +318,6 @@ def cart_detail(request):
     cart_items = CartItem.objects.filter(cart=cart)
     if not cart:
         cart = Cart.objects.create(user=request.user)
-    for item in cart_items:
-        cart.total_price += item.product_supplier.price * item.quantity
     return render(request, 'cart_detail.html', {'cart': cart, 'total_price': cart.total_price, 'cart_items': cart_items})
 
 @login_required
@@ -345,9 +343,9 @@ def update_cart(request, product_supplier_id):
     quantity = request.POST.get('quantity', 1)
     quantity = int(quantity)
     product_supplier = ProductSupplier.objects.get(id=product_supplier_id)
-    cart_item = CartItem.objects.filter(cart__user=request.user, product_supplier=product_supplier).first()
-    cart_item.quantity = quantity
-    cart_item.save()
+    cart = Cart.objects.filter(user=request.user).first()
+    if cart:
+        cart.update_quantity(product_supplier, quantity)
     return redirect('cart_detail')
 
 class OrderValidationView(TemplateView):
@@ -356,8 +354,6 @@ class OrderValidationView(TemplateView):
         context = super(OrderValidationView, self).get_context_data(**kwargs)
         cart = Cart.objects.filter(user=self.request.user).first()
         context['cart'] = cart
-        for item in cart.items.all():
-            cart.total_price += item.product_supplier.price * item.quantity
         context['total_price'] = cart.total_price
         return context
 
@@ -365,28 +361,40 @@ class OrderValidationView(TemplateView):
 def remove_from_cart(request, product_supplier_id):
     product_supplier = ProductSupplier.objects.get(id=product_supplier_id)
     cart = Cart.objects.filter(user=request.user).first()
-    cart.remove_product(product_supplier)
+    if cart:
+        cart.remove_product(product_supplier)
+    return redirect('cart_detail')
+
+@login_required
+def clear_cart(request):
+    cart = Cart.objects.filter(user=request.user).first()
+    if cart:
+        cart.clear_cart()
     return redirect('cart_detail')
 
 @login_required
 def validate_order(request):
     cart = Cart.objects.filter(user=request.user).first()
     if cart:
-        validated_cart = ValidatedCart.objects.create(
-            user=request.user, 
-            date_of_purchase=timezone.now(), 
-            total_price=cart.total_price)
-        for item in cart.items.all():
-            product_supplier = ProductSupplier.objects.get(id=item.product_supplier.id)
-            product_supplier.quantity -= item.quantity
-            product_supplier.save()
-            validated_cart_item = ValidatedCartItem.objects.create(
-                validated_cart=validated_cart,
-                product_supplier = item.product_supplier,
-                quantity = item.quantity
-            )
-            validated_cart_item.save()
-        cart.clear_cart()
+        if cart.total_price > 0:
+            validated_cart = ValidatedCart.objects.create(
+                user=request.user, 
+                date_of_purchase=timezone.now(), 
+                total_price=cart.total_price)
+            for item in cart.items.all():
+                product_supplier = ProductSupplier.objects.get(id=item.product_supplier.id)
+                product_supplier.quantity -= item.quantity
+                product_supplier.save()
+                validated_cart_item = ValidatedCartItem.objects.create(
+                    validated_cart=validated_cart,
+                    product_supplier=item.product_supplier,
+                    quantity=item.quantity
+                )
+                validated_cart_item.save()
+            cart.clear_cart()
+        else:
+            messages.error(request, "Votre panier est vide.")
+            return redirect('cart_detail')
     return redirect('order_validation')
 
 class HistoryCartsView(ListView):
