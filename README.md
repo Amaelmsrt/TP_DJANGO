@@ -11,27 +11,27 @@ L'ensemble des vidéos de présentation se trouve dans le dossier data/video
 
 ### Présentation module Utilisateur :
 
-[Voir la vidéo](https://youtu.be/6uI7kytMBr8)
+https://youtu.be/6uI7kytMBr8
 
-[Voir la vidéo](https://youtu.be/gZ2G3y9t6ns)
+https://youtu.be/gZ2G3y9t6ns
 
 ### Présentation module Administateur :
 
-[Voir la vidéo](https://youtu.be/3iy84kdouFU)
+https://youtu.be/3iy84kdouFU
 
 ### Présentation module Fournisseur :
 
-[Voir la vidéo](https://youtu.be/zedt2M-Edf0)
+https://youtu.be/zedt2M-Edf0
 
 ### Ajout d'un fournisseur et d'un produit :
 
-[Voir la vidéo](https://youtu.be/ngLwlflaJ1E)
+https://youtu.be/ngLwlflaJ1E
 
-[Voir la vidéo](https://youtu.be/MBfxjqULw1k)
+https://youtu.be/MBfxjqULw1k
 
 ### Présentation de l'API :
 
-[Voir la vidéo](https://youtu.be/Wtpsjav1vhI)
+https://youtu.be/Wtpsjav1vhI
 
 
 
