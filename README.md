@@ -167,4 +167,4 @@ coverage run --source='monapp' manage.py test monapp.tests && coverage report -m
 
 Génération du MCD avec l'outil [Graphviz](https://graphviz.org/) dans le fichier data/MCD.png
 
-![Diagramme de classe](./data/MCD.png)
+![Diagramme de classe](./data/mcd.png)
