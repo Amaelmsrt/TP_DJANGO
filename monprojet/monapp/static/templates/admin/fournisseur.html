@@ -4,6 +4,12 @@
 {% block content %}
 <h1>Liste des Fournisseurs</h1>
 <a href="{% url 'new_supplier' %}" class="btn btn-primary">Ajouter un nouveau fournisseur</a>
+<p class="lead mb-3 ml-0">Rechercher un fournisseur...</p>
+<form method="GET" action="">
+    <input class="form-control" type="text" name="search" placeholder="Tapez ici votre recherche"
+        value="{{ request.GET.search }}">
+    <button type="submit" class="btn btn-success mt-2">Rechercher</button>
+</form>
 <table class="table">
     <thead>
         <tr>

@@ -40,9 +40,12 @@
                             <img src="{% static 'icons/shopping_cart.svg' %}" alt="Panier"
                                 style="width: 1rem; margin-left: 0.5rem;">
                         </a>
+                    </li>
+                    <li>
                         <a class="nav-link" href="{% url 'history_carts' %}">Historique des paniers</a>
                     </li>
                     {% elif request.session.supplier %}
+
 
                     <li><a href="{% url 'supplier_products' %}">Mes produits</a></li>
                     <li><a href="{% url 'supplier_orders' %}">Mes commandes</a></li>

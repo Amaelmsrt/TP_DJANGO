@@ -14,6 +14,7 @@ from django.db import models
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
+from django.db.models import Q
 
 def ListProducts(request):
     prdcts = Product.objects.all()
@@ -53,9 +54,16 @@ class ProductListView(ListView):
     context_object_name = "products"
 
     def get_context_data(self, **kwargs):
+        get = self.request.GET
+        search = get.get('search', '')
+        print(search)
+
         context = super().get_context_data(**kwargs)
         context['titremenu'] = "Liste des produits"
-        products = Product.objects.all()
+        if search:
+            products = Product.objects.filter(name__icontains=search)
+        else:
+            products = Product.objects.all()
         for product in products:
             product_suppliers = ProductSupplier.objects.filter(product=product)
             min_price = product_suppliers.aggregate(models.Min('price'))['price__min']
@@ -415,7 +423,11 @@ class HistoryCartsView(ListView):
 class SupplierListView(TemplateView):
     template_name = "admin/fournisseur.html"
     def get(self, request, **kwargs):
-        suppliers = Supplier.objects.all()
+        search = request.GET.get('search', '')
+        if search:
+            suppliers = Supplier.objects.filter(name__icontains=search)
+        else:
+            suppliers = Supplier.objects.all()
         return render(request, self.template_name, {'suppliers': suppliers})
 
 # edit supplier
@@ -450,7 +462,11 @@ class SupplierCreateView(CreateView):
 class OrderListView(TemplateView):
     template_name = "admin/orders.html"
     def get(self, request, **kwargs):
-        orders = Order.objects.all()
+        search = request.GET.get('search', '')
+        if search:
+            orders = Order.objects.filter(Q(product__name__icontains=search) | Q(supplier__name__icontains=search))
+        else:
+            orders = Order.objects.all()
         return render(request, self.template_name, {'orders': orders})
 
 # Order Add View

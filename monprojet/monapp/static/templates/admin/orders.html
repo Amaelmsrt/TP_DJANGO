@@ -6,6 +6,13 @@
 
 <a href="{% url 'new_order' %}" class="btn btn-primary">Créer une Nouvelle Commande</a>
 
+<p class="lead mb-3 ml-0">Rechercher une commande...</p>
+<form method="GET" action="">
+    <input class="form-control" type="text" name="search" placeholder="Tapez ici votre recherche"
+        value="{{ request.GET.search }}">
+    <button type="submit" class="btn btn-success mt-2">Rechercher</button>
+</form>
+
 <h2>Commandes en Préparation</h2>
 <table class="table" id="preparationTable">
     <thead>
