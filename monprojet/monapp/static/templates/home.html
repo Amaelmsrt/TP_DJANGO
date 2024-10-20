@@ -6,6 +6,8 @@
 <h2>Bienvenue sur la page d'accueil</h2>
 {% if user.is_authenticated %}
 <p>Bonjour {{ user.username }} !</p>
+{% elif request.session.supplier %}
+<p>Bonjour vous êtes connecté en tant que fournisseur.</p>
 {% else %}
 <p>Bienvenue, veuillez vous <a href="{% url 'login' %}">connecter</a>.</p>
 {% endif %}

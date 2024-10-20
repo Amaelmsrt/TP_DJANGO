@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Les produits que vous vendez</h1>
+
+<a href="{% url 'new_supplier_product' %}" class="btn btn-primary">Ajouter un produit à vendre</a>
+<table>
+    <thead>
+        <tr>
+            <th>Nom du produit</th>
+            <th>Prix</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for productSell in products %}
+        <tr>
+            <td>{{ productSell.product.name }}</td>
+            <td>{{ productSell.price }}</td>
+            <td>
+                <a href="{% url 'update_supplier_product' productSell.id %}" class="btn btn-primary">Mettre à jour</a>
+                <a href="{% url 'delete_supplier_product' productSell.id %}" class="btn btn-danger">Ne plus vendre</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 18px;
+        text-align: left;
+    }
+
+    th,
+    td {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    tr:hover {
+        background-color: #f5f5f5;
+    }
+</style>
+{% endblock %}

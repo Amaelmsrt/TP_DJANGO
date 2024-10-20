@@ -7,7 +7,7 @@ body {
 }
 
 .container {
-    width: 80%;
+    width: 95%;
     margin: auto;
     overflow: hidden;
 }
@@ -294,4 +294,8 @@ form textarea:focus {
 h1 {
     text-align: center;
     margin-bottom: 20px;
+}
+
+.product-img {
+    object-fit: contain;
 }

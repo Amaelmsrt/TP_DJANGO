@@ -8,7 +8,6 @@
 <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img" style="width: 20vw; height: 20vh;">
 <h2>{{ product.name }}</h2>
 <ul>
-    <li>Code : {{ product.code }}</li>
     <li>Date de création : {{ product.date_creation }}</li>
     <li>Fournisseurs :
         <ul>
@@ -41,6 +40,7 @@
         <span style="color: red;" {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</span>
     {% endfor %}
 {% endif %}
-
-<a href="{% url 'update_product' product.id %}" class="btn btn-primary mt-3">Modifier</a>
+{% if user.is_superuser %}
+    <a href="{% url 'update_product' product.id %}" class="btn btn-primary mt-3">Modifier</a>
+{% endif %}
 {% endblock %}

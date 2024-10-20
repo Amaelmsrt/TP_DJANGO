@@ -32,8 +32,7 @@
                     <li><a href="{% url 'orders' %}">Commandes</a></li>
                     <li><a href="{% url 'attributs' %}">Attributs</a></li>
                     <li><a href="{% url 'items' %}">Items</a></li>
-                    {% endif %}
-                    {% if user.is_authenticated and not user.is_superuser %}
+                    {% elif user.is_authenticated and not user.is_superuser %}
                     <li><a href="{% url 'produits' %}">Produits</a></li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'cart_detail' %}">
@@ -43,11 +42,9 @@
                         </a>
                         <a class="nav-link" href="{% url 'history_carts' %}">Historique des paniers</a>
                     </li>
-                    {% endif %}
+                    {% elif request.session.supplier %}
 
-                    {% if request.session.supplier %}
-
-                    <li><a href="#">Mes produits</a></li>
+                    <li><a href="{% url 'supplier_products' %}">Mes produits</a></li>
                     <li><a href="{% url 'supplier_orders' %}">Mes commandes</a></li>
 
                     {% endif %}

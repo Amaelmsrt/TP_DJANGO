@@ -52,6 +52,10 @@ urlpatterns = [
     path('admin-order/', views.OrderListView.as_view(), name='orders'),
     path('admin-order/add/', views.OrderCreateView.as_view(), name='new_order'),
     path('supplier-order/', views.SupplierOrderListView.as_view(), name='supplier_orders'),
+    path('supplier-product-selling/', views.SupplierProdcutSellView.as_view(), name='supplier_products'),
+    path('supplier-product-selling/<pk>/update/', views.SupplierProductSellUpdate.as_view(), name='update_supplier_product'),
+    path('supplier-product-selling/<pk>/delete/', views.SupplierProductSellDelete.as_view(), name='delete_supplier_product'),
+    path('supplier-product-selling/add/', views.SupplierProductSellCreate.as_view(), name='new_supplier_product'),
     path('orders/change_status/<int:order_id>/', views.ChangeStatusOrder.as_view(), name='change_status_order'),
     path('carts/history/', views.HistoryCartsView.as_view(), name='history_carts'),
 

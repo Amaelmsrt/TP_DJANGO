@@ -5,7 +5,7 @@ from django.core.mail import send_mail
 from django.urls import reverse_lazy
 
 from monapp.forms import ContactUsForm, ProductAttributeForm, ProductForm, ProductItemForm, ProductAttributeValueForm
-from .models import Product, ProductAttribute, ProductAttributeValue, ProductItem, Supplier, ProductSupplier, Cart, CartItem, Order, ValidatedCart, ValidatedCartItem
+from .models import Product, ProductAttribute, ProductAttributeValue, ProductItem, Supplier, ProductSupplier, Cart, CartItem, Order, ValidatedCart, ValidatedCartItem, SupplierSellProduct
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import LoginView
@@ -129,7 +129,7 @@ class ConnectView(LoginView):
             if supplier:
                 # mettre supplier dans la session
                 request.session['supplier'] = supplier.id
-                return redirect('detail_supplier', supplier.id)
+                return redirect('home')
             # clear les messages d'erreur
             messages.error(request, None)
             messages.error(request, "Nom d'utilisateur ou mot de passe incorrect")
@@ -500,3 +500,53 @@ class ChangeStatusOrder(TemplateView):
         
         order.save()
         return redirect('supplier_orders')
+
+class SupplierProdcutSellView(TemplateView):
+    template_name = 'supplier/sell_product.html'
+    def get(self, request, **kwargs):
+        supplier_id = request.session.get('supplier')
+        if not supplier_id:
+            return redirect('login')
+        supplier = Supplier.objects.get(id=supplier_id)
+        productsSell = SupplierSellProduct.objects.filter(supplier=supplier)
+        print(productsSell)
+        return render(request, self.template_name, {'products': productsSell})
+
+class SupplierProductSellUpdate(UpdateView):
+    model = SupplierSellProduct
+    fields = ['price']
+    template_name = "supplier/update_sell_product.html"
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        product_sell = form.save()
+        return redirect('supplier_products')
+
+class SupplierProductSellDelete(DeleteView):
+    model = SupplierSellProduct
+    template_name = "supplier/delete_sell_product.html"
+    success_url = reverse_lazy('supplier_products')
+
+class SupplierProductSellCreate(CreateView):
+    model = SupplierSellProduct
+    fields = ['product', 'price']
+    template_name = "supplier/new_sell_product.html"
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        supplier_id = self.request.session.get('supplier')
+        if supplier_id:
+            supplier = Supplier.objects.get(id=supplier_id)
+            # Filtrer les produits qui ne sont pas déjà en vente par ce fournisseur
+            form.fields['product'].queryset = Product.objects.exclude(
+                id__in=SupplierSellProduct.objects.filter(supplier=supplier).values_list('product_id', flat=True)
+            )
+        return form
+
+    def form_valid(self, form):
+        supplier_id = self.request.session.get('supplier')
+        if supplier_id:
+            form.instance.supplier = Supplier.objects.get(id=supplier_id)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('supplier_products')
