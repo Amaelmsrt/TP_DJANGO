@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'monapp',
     'debug_toolbar',
+    'django_extensions',
     'rest_framework',
 ]
 
