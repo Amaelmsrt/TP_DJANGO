@@ -16,10 +16,6 @@ from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Q
 
-def ListProducts(request):
-    prdcts = Product.objects.all()
-    return render(request, 'list_products.html', {'products': prdcts})
-
 class HomeView(TemplateView): 
     template_name = "home.html"
     def post(self, request, **kwargs):
@@ -164,20 +160,6 @@ class DisconnectView(TemplateView):
             del request.session['supplier']
         logout(request)
         return render(request, self.template_name)
-
-def ProductCreate(request):
-    form = ProductForm()
-    return render(request, "new_product.html", {'form': form})
-
-def ProductCreate(request):
-    if request.method == 'POST':
-        form = ProductForm(request.POST) 
-        if form.is_valid():
-            product = form.save()
-            return redirect('detail_product', product.id)
-    else:
-        form = ProductForm()
-    return render(request, "new_product.html", {'form': form})
 
 class ProductCreateView(CreateView): 
     model = Product

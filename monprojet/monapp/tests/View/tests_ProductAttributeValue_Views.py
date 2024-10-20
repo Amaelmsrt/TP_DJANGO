@@ -123,3 +123,65 @@ class ProductAttributeValueListViewTest(TestCase):
         self.assertContains(response, 'Couleur')
         # Vérifier que le nom de la valeur est affiché 
         self.assertContains(response, 'Violet')
+
+class ProductAttributeUpdateViewTest(TestCase):
+    def setUp(self):
+        user = User.objects.create_user(username='testuser', password='secret')
+        self.client.login(username='testuser', password='secret')
+        self.product_attribute = ProductAttribute.objects.create(name="Taille")
+
+    def test_update_view_get(self):
+        """
+        Tester que la vue de mise à jour s'affiche correctement 
+        """
+        response = self.client.get(reverse('update_attribut', args=[self.product_attribute.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'update_attribute.html')
+
+    def test_update_view_post_valid(self):
+        """
+        Tester que la vue met à jour l'objet lorsque les données sont valides 
+        """
+        data = { 'name': 'Poids' }
+        response = self.client.post(reverse('update_attribut', args=[self.product_attribute.id]), data)
+        # Redirection après la mise à jour 
+        self.assertEqual(response.status_code, 302)
+        # Recharger l'objet depuis la base de données 
+        self.product_attribute.refresh_from_db()
+        # Vérifier la mise à jour 
+        self.assertEqual(self.product_attribute.name, 'Poids')
+
+    def test_get_queryset(self):
+        """
+        Tester que la méthode get_queryset renvoie les bons objets 
+        """
+        response = self.client.get(reverse('attributs'))
+        self.assertEqual(list(response.context['productattributes']), list(ProductAttribute.objects.all()))
+
+
+class ProductAttributeDetailViewTest(TestCase):
+    def setUp(self):
+        user = User.objects.create_user(username='testuser', password='secret')
+        self.client.login(username='testuser', password='secret')
+        self.product_attribute = ProductAttribute.objects.create(name="Taille")
+        self.product_attribute_value = ProductAttributeValue.objects.create(value='M', product_attribute=self.product_attribute, position=1)
+
+    def test_detail_view(self):
+        """
+        Tester que la vue de détail renvoie le bon template et affiche les bonnes données 
+        """
+        response = self.client.get(reverse('detail_attribut', args=[self.product_attribute.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'detail_attribute.html')
+        # Vérifier que le nom de l'attribut est affiché 
+        self.assertContains(response, 'Taille')
+        # Vérifier que le nom de la valeur est affiché 
+        self.assertContains(response, 'M')
+
+    def test_get_context_data(self):
+        """
+        Tester que la méthode get_context_data renvoie les bonnes données 
+        """
+        response = self.client.get(reverse('detail_attribut', args=[self.product_attribute.id]))
+        self.assertEqual(response.context['titremenu'], 'Détail attribut')
+        self.assertEqual(list(response.context['values']), list(ProductAttributeValue.objects.filter(product_attribute=self.product_attribute).order_by('position')))

@@ -33,7 +33,7 @@ class Product(models.Model):
     code          = models.CharField(max_length=10, null=True, blank=True, unique=True)
     status        = models.SmallIntegerField(choices=PRODUCT_STATUS, default=0)
     date_creation = models.DateTimeField(blank=True, verbose_name="Date création", default=timezone.now)
-    image         = models.FileField(upload_to='img/', null=True, blank=True, verbose_name="Image du produit")
+    image         = models.FileField(upload_to='img/', blank=True, verbose_name="Image du produit", default='img/images.jpeg')
 
     def __str__(self):
         """
@@ -149,6 +149,7 @@ class Supplier(models.Model):
     address = models.TextField(null=True, blank=True)
     phone = models.CharField(max_length=20, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
+    products = models.ManyToManyField('Product', through='ProductSupplier', related_name='suppliers')
 
     def __str__(self):
         """
@@ -232,7 +233,7 @@ class ValidatedCart(models.Model):
         """
         Retourne une représentation en chaîne de caractères du panier validé.
         """
-        return f"Panier validé de {self.user.username} - {self.date_of_purchase}"
+        return f"Panier validé de {self.user.username}"
 
 class ValidatedCartItem(models.Model):
     """
@@ -243,7 +244,7 @@ class ValidatedCartItem(models.Model):
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
-        return f"{self.cart_item.quantity} x {self.cart_item.product_supplier.product.name}"
+        return f"{self.quantity} x {self.product_supplier.product.name}"
 
     @property
     def total_price(self):

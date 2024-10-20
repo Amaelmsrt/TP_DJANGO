@@ -1,10 +1,11 @@
 from django.test import TestCase
-from monapp.models import Order, Supplier
+from monapp.models import Order, Supplier, Product
 
 class OrderModelTest(TestCase):
     def setUp(self):
         self.supplier = Supplier.objects.create(name="Fournisseur 1")
-        self.order = Order.objects.create(supplier=self.supplier)
+        self.product = Product.objects.create(name="Produit 1")
+        self.order = Order.objects.create(supplier=self.supplier, product=self.product)
 
     def test_order_creation(self):
         """

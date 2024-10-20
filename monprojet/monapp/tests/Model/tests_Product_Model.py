@@ -4,7 +4,7 @@ from monapp.models import Product
 class ProductModelTest(TestCase):
 
     def setUp(self):
-        self.product = Product.objects.create(name="Chaise", code="CH001", price_ht=50, price_ttc=60, status=0)
+        self.product = Product.objects.create(name="Chaise", code="CH001", status=0)
 
     def test_product_creation(self): 
         """
@@ -12,15 +12,13 @@ class ProductModelTest(TestCase):
         """
         self.assertEqual(self.product.name, "Chaise") 
         self.assertEqual(self.product.code, "CH001") 
-        self.assertEqual(self.product.price_ht, 50)
-        self.assertEqual(self.product.price_ttc, 60)
         self.assertEqual(self.product.status, 0)
 
     def test_string_representation(self):
         """
         Tester la méthode __str__ du modèle Product 
         """
-        self.assertEqual(str(self.product), "Chaise CH001")
+        self.assertEqual(str(self.product), "Chaise")
 
     def test_update_product(self): 
         """

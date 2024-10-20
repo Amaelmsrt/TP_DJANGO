@@ -1,13 +1,15 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
-from .viewsAPI import ProductViewSet, StatusViewSet, SupplierSellProductViewSet, SupplierViewSet
+from .viewsAPI import ProductViewSet, StatusViewSet, SupplierSellProductViewSet, SupplierViewSet, OrderViewSet, ProductSupplierViewSet
 
 router = DefaultRouter()
 router.register(r'products', ProductViewSet)
 router.register(r'status', StatusViewSet)
 router.register(r'supplier_sell_product', SupplierSellProductViewSet)
 router.register(r'suppliers', SupplierViewSet)
+router.register(r'product_supplier', ProductSupplierViewSet)
+router.register(r'orders', OrderViewSet)
 
 
 

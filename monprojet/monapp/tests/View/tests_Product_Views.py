@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
-from monapp.models import Product
+from monapp.models import Product, Supplier
 from monapp.forms import ProductForm
 
 class ProductViewsTestCase(TestCase):
@@ -40,3 +40,9 @@ class ProductViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('produits'))
         self.assertFalse(Product.objects.filter(id=self.product.id).exists())
+
+    def test_search_view(self):
+        response = self.client.get(reverse('produits'), {'search': 'Test'})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'list_products.html')
+        self.assertContains(response, 'Test Product')

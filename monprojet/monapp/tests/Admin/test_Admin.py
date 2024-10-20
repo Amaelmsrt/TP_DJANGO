@@ -17,13 +17,7 @@ class ProductAdminTest(TestCase):
         self.admin = ProductAdmin(Product, self.site)
         self.user = User.objects.create_superuser(username='admin', password='password', email='admin@example.com')
         self.request = MockRequest(self.user)
-        self.product = Product.objects.create(code='P001', name='Product 1', price_ht=100, price_ttc=120, status=0)
-
-    def test_tax_calculation(self):
-        """
-        Teste que le calcul de la taxe est correct
-        """
-        self.assertAlmostEqual(self.admin.tax(self.product), 20.0, places=2)
+        self.product = Product.objects.create(code='P001', name='Product 1')
 
     def test_set_product_online(self):
         """
@@ -50,8 +44,8 @@ class ProductFilterTest(TestCase):
         self.user = User.objects.create_superuser(username='admin', password='password', email='admin@example.com')
         self.request = MockRequest(self.user)
         self.filter = ProductFilter(self.request, {}, Product, ProductAdmin)
-        self.product_online = Product.objects.create(code='P001', name='Product 1', price_ht=100, price_ttc=120, status=1)
-        self.product_offline = Product.objects.create(code='P002', name='Product 2', price_ht=100, price_ttc=120, status=0)
+        self.product_online = Product.objects.create(code='P001', name='Product 1', status=1)
+        self.product_offline = Product.objects.create(code='P002', name='Product 2', status=0)
 
     def test_queryset_online(self):
         """

@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from .models import Product, Status, SupplierSellProduct, Supplier
-
+from .models import Product, Status, SupplierSellProduct, Supplier, ProductSupplier, Order
 class StatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Status
@@ -19,4 +18,14 @@ class SupplierSerializer(serializers.ModelSerializer):
 class SupplierSellProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = SupplierSellProduct
+        fields = '__all__'
+
+class ProductSupplierSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductSupplier
+        fields = '__all__'
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
         fields = '__all__'
