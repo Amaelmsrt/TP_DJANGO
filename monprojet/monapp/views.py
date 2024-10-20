@@ -383,8 +383,14 @@ def clear_cart(request):
 @login_required
 def validate_order(request):
     cart = Cart.objects.filter(user=request.user).first()
+    stock_disp = True
+    for item in cart.items.all():
+        if item.product_supplier.quantity < item.quantity:
+            stock_disp = False
+            messages.error(request, f"La quantité demandée pour {item.product_supplier.product.name} dépasse le stock disponible.", extra_tags=str(item.product_supplier.id))
+
     if cart:
-        if cart.total_price > 0:
+        if cart.total_price > 0 and stock_disp:
             validated_cart = ValidatedCart.objects.create(
                 user=request.user, 
                 date_of_purchase=timezone.now(), 
@@ -401,7 +407,8 @@ def validate_order(request):
                 validated_cart_item.save()
             cart.clear_cart()
         else:
-            messages.error(request, "Votre panier est vide.")
+            if cart.total_price == 0:
+                messages.error(request, "Votre panier est vide.")
             return redirect('cart_detail')
     return redirect('order_validation')
 
@@ -457,7 +464,7 @@ class SupplierCreateView(CreateView):
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         supplier = form.save()
-        return redirect('fournisseur')
+        return redirect('suppliers')
 
 class OrderListView(TemplateView):
     template_name = "admin/orders.html"
@@ -511,7 +518,8 @@ class ChangeStatusOrder(TemplateView):
                 product_supplier.quantity += order.quantity
                 product_supplier.save()
             except ProductSupplier.DoesNotExist:
-                ProductSupplier.objects.create(product=order.product, supplier=order.supplier, quantity=order.quantity, price = order.price)
+                price = SupplierSellProduct.objects.get(product=order.product, supplier=order.supplier).price
+                ProductSupplier.objects.create(product=order.product, supplier=order.supplier, quantity=order.quantity, price = price)
             return redirect('orders')
         
         order.save()
